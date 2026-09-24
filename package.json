@@ -1,0 +1,13 @@
+{
+  "name": "ciyora-jewels",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check-js.mjs",
+    "dev": "wrangler pages dev . --d1=DB=ciyora-jewels",
+    "deploy": "wrangler pages deploy . --project-name=ciyora-jewels"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}

@@ -1,0 +1,657 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ciyora Jewels â€” Admin Dashboard</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@5.0.19/latin-400-normal.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@5.0.19/latin-500-normal.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@5.0.19/latin-600-normal.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@5.0.19/latin-700-normal.css" />
+<script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="icon" href="assets/images/brand/ciyora-logo.jpg" type="image/jpeg"><link rel="stylesheet" href="assets/css/admin.css?v=2">
+</head>
+<body>
+
+<!-- ============ LOGIN ============ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mono"><img src="assets/images/brand/ciyora-logo.jpg" alt=""></div>
+      <div class="login-logo-text">
+        <span class="login-logo-main">CIYORA</span>
+        <span class="login-logo-sub">JEWELS Â· ADMIN</span>
+      </div>
+    </div>
+    <h2 class="login-title">Welcome back</h2>
+    <p class="login-sub">Sign in to manage your jewelry catalog</p>
+    <form class="login-form" onsubmit="handleLogin(event)" autocomplete="on">
+      <div class="form-field">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" name="email" autocomplete="username" placeholder="admin@ciyorajewels.com" required>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" name="password" autocomplete="current-password" placeholder="Enter your password" required>
+      </div>
+      <div id="loginError" class="form-hint" role="alert" hidden></div><button type="submit" class="login-btn">Sign In</button>
+    </form>
+    <div class="login-footer">Protected admin area Â· Ciyora Jewels Â© 2026</div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div class="app" id="app">
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-mono"><img src="assets/images/brand/ciyora-logo.jpg" alt=""></div>
+        <div class="sidebar-logo-text">
+          <span class="sidebar-logo-main">CIYORA</span>
+          <span class="sidebar-logo-sub">JEWELS</span>
+        </div>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-label">Menu</div>
+      <button class="nav-item active" data-page="dashboard" onclick="goTo('dashboard')">
+        <i data-lucide="home"></i> Dashboard
+      </button>
+      <button class="nav-item" data-page="products" onclick="goTo('products')">
+        <i data-lucide="gem"></i> Products
+      </button>
+      <button class="nav-item" data-page="categories" onclick="goTo('categories')">
+        <i data-lucide="folder"></i> Categories
+      </button>
+      <button class="nav-item" data-page="settings" onclick="goTo('settings')">
+        <i data-lucide="settings"></i> Settings
+      </button>
+      <div class="sidebar-label" style="margin-top:16px">Account</div>
+      <button class="nav-item logout" onclick="handleLogout()">
+        <i data-lucide="log-out"></i> Logout
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-user-avatar">CJ</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Ciyora Admin</div>
+          <div class="sidebar-user-role">Owner</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">
+        <i data-lucide="menu"></i>
+      </button>
+      <h2 class="page-title" id="pageTitle">Dashboard</h2>
+      <div class="topbar-search">
+        <i data-lucide="search"></i>
+        <input type="text" id="globalSearch" placeholder="Search products, categories..." oninput="handleGlobalSearch(this.value)">
+      </div>
+      <div class="topbar-actions">
+        <button class="topbar-icon" aria-label="Notifications">
+          <i data-lucide="bell"></i>
+          <span class="dot"></span>
+        </button>
+        <div class="topbar-profile" title="Ciyora Admin">CJ</div>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="content">
+
+      <!-- ====== DASHBOARD ====== -->
+      <section class="page active" id="page-dashboard">
+        <div class="page-head">
+          <div>
+            <h1>Dashboard</h1>
+            <p>Welcome back! Here's an overview of your store.</p>
+          </div>
+          <button class="btn btn-primary" onclick="goTo('add')">
+            <i data-lucide="plus"></i> Add New Product
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Total Products</span>
+              <div class="stat-icon"><i data-lucide="gem"></i></div>
+            </div>
+            <div class="stat-value" id="stat-total">8</div>
+            <div class="stat-change"><i data-lucide="trending-up" style="width:12px;height:12px"></i> +2 this week</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Published</span>
+              <div class="stat-icon" style="background:var(--success-bg);color:var(--success)"><i data-lucide="check-circle"></i></div>
+            </div>
+            <div class="stat-value" id="stat-published">6</div>
+            <div class="stat-change"><i data-lucide="trending-up" style="width:12px;height:12px"></i> Visible on catalog</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Hidden</span>
+              <div class="stat-icon" style="background:var(--line-soft);color:var(--muted)"><i data-lucide="eye-off"></i></div>
+            </div>
+            <div class="stat-value" id="stat-hidden">2</div>
+            <div class="stat-change" style="color:var(--muted)">Not visible</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-head">
+              <span class="stat-label">Categories</span>
+              <div class="stat-icon"><i data-lucide="folder"></i></div>
+            </div>
+            <div class="stat-value" id="stat-categories">6</div>
+            <div class="stat-change" style="color:var(--muted)">All organized</div>
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div class="dash-grid">
+          <!-- Recent products -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Recently Added</div>
+                <div class="card-sub">Your latest products</div>
+              </div>
+              <button class="btn btn-ghost btn-sm" onclick="goTo('products')">View all <i data-lucide="arrow-right" style="width:14px;height:14px"></i></button>
+            </div>
+            <div class="recent-list" id="recentList"></div>
+          </div>
+
+          <!-- Quick actions -->
+          <div class="card">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Quick Actions</div>
+                <div class="card-sub">Common tasks</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="qa-list">
+                <button class="qa-item" onclick="goTo('add')">
+                  <div class="qa-icon"><i data-lucide="plus"></i></div>
+                  <div class="qa-text">
+                    <div class="qa-title">Add New Product</div>
+                    <div class="qa-desc">List a new jewelry piece</div>
+                  </div>
+                  <div class="qa-arrow"><i data-lucide="chevron-right"></i></div>
+                </button>
+                <button class="qa-item" onclick="goTo('categories')">
+                  <div class="qa-icon"><i data-lucide="folder"></i></div>
+                  <div class="qa-text">
+                    <div class="qa-title">Manage Categories</div>
+                    <div class="qa-desc">Organize your collections</div>
+                  </div>
+                  <div class="qa-arrow"><i data-lucide="chevron-right"></i></div>
+                </button>
+                <button class="qa-item" onclick="goTo('settings')">
+                  <div class="qa-icon"><i data-lucide="settings"></i></div>
+                  <div class="qa-text">
+                    <div class="qa-title">Store Settings</div>
+                    <div class="qa-desc">Update your business info</div>
+                  </div>
+                  <div class="qa-arrow"><i data-lucide="chevron-right"></i></div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== PRODUCTS ====== -->
+      <section class="page" id="page-products">
+        <div class="page-head">
+          <div>
+            <h1>Products</h1>
+            <p>Manage all your jewelry pieces</p>
+          </div>
+          <button class="btn btn-primary" onclick="goTo('add')">
+            <i data-lucide="plus"></i> Add Product
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">All Products</div>
+              <div class="card-sub" id="productsCount">8 items</div>
+            </div>
+            <div class="catalog-toolbar">
+              <div class="topbar-search" style="max-width:220px;margin-left:0">
+                <i data-lucide="search"></i>
+                <input type="text" id="productSearch" placeholder="Search products..." oninput="renderProducts()">
+              </div>
+              <select class="form-select toolbar-select" id="productStatusFilter" aria-label="Filter products by status" onchange="renderProducts()">
+                <option value="all">All status</option>
+                <option value="published">Published</option>
+                <option value="hidden">Hidden</option>
+              </select>
+              <select class="form-select toolbar-select" id="productSort" aria-label="Sort products" onchange="renderProducts()">
+                <option value="recent">Newest first</option>
+                <option value="name">Name A–Z</option>
+                <option value="price">Price high–low</option>
+                <option value="status">Published first</option>
+              </select>
+            </div>
+          </div>
+          <div id="productsTableWrap">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th style="text-align:right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="productsTable"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="productsEmpty" class="empty" style="display:none">
+            <div class="empty-icon"><i data-lucide="gem"></i></div>
+            <h3>No products added yet</h3>
+            <p>Start building your catalog by adding your first piece.</p>
+            <button class="btn btn-primary btn-lg" onclick="goTo('add')">
+              <i data-lucide="plus"></i> Add First Product
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== ADD PRODUCT ====== -->
+      <section class="page" id="page-add">
+        <div class="page-head">
+          <div>
+            <h1>Add New Product</h1>
+            <p>Fill in the details to list a new jewelry piece</p>
+          </div>
+          <button class="btn btn-secondary" onclick="goTo('products')">
+            <i data-lucide="arrow-left"></i> Back
+          </button>
+        </div>
+
+        <div class="card form-card">
+          <div class="card-body">
+            <form onsubmit="handleSaveProduct(event)">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label">Product Name</label>
+                  <input type="text" class="form-input" placeholder="e.g. Celestial Diamond Ring" required>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" required>
+                    <option value="">Select category</option>
+                    <option>Rings</option>
+                    <option>Necklaces</option>
+                    <option>Bracelets</option>
+                    <option>Earrings</option>
+                    <option>Bridal</option>
+                    <option>Temple Jewelry</option>
+                  </select>
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-textarea" placeholder="Describe your jewelry piece..."></textarea>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Price <span class="opt">(optional)</span></label>
+                  <input type="text" class="form-input" placeholder="â‚¹ 0.00">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">WhatsApp Number</label>
+                  <input type="text" class="form-input" placeholder="+91 98765 43210">
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Instagram Post Link</label>
+                  <input type="url" class="form-input" placeholder="Paste Instagram post URL...">
+                  <div class="form-hint">Link to the Instagram post featuring this product</div>
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Product Images</label>
+                  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
+                    <div class="upload-title">Drag & drop images here</div>
+                    <div class="upload-sub">or <b>click to browse</b> Â· JPG, PNG up to 5MB</div>
+                  </div>
+                  <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
+                  <div class="upload-preview" id="uploadPreview"></div>
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Status</label>
+                  <div class="status-group">
+                    <label class="status-opt active" onclick="selectStatus(this,'published')">
+                      <input type="radio" name="status" value="published" checked>
+                      <div class="status-radio"></div>
+                      <div>
+                        <div class="status-text">Published</div>
+                        <div class="status-desc">Visible in catalog</div>
+                      </div>
+                    </label>
+                    <label class="status-opt" onclick="selectStatus(this,'hidden')">
+                      <input type="radio" name="status" value="hidden">
+                      <div class="status-radio"></div>
+                      <div>
+                        <div class="status-text">Hidden</div>
+                        <div class="status-desc">Draft, not visible</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="goTo('products')">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-lg">
+                  <i data-lucide="save"></i> Save Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== EDIT PRODUCT ====== -->
+      <section class="page" id="page-edit">
+        <div class="page-head">
+          <div>
+            <h1>Edit Product</h1>
+            <p>Update product details</p>
+          </div>
+          <button class="btn btn-secondary" onclick="goTo('products')">
+            <i data-lucide="arrow-left"></i> Back
+          </button>
+        </div>
+
+        <div class="card form-card">
+          <div class="card-body">
+            <form onsubmit="handleUpdateProduct(event)">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label">Product Name</label>
+                  <input type="text" class="form-input" id="edit-name" value="Celestial Diamond Ring" required>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Category</label>
+                  <select class="form-select" id="edit-category" required>
+                    <option>Rings</option>
+                    <option>Necklaces</option>
+                    <option>Bracelets</option>
+                    <option>Earrings</option>
+                    <option>Bridal</option>
+                    <option>Temple Jewelry</option>
+                  </select>
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Description</label>
+                  <textarea class="form-textarea" id="edit-desc">A brilliant solitaire set in 18k white gold with a halo of micro-pavÃ© diamonds.</textarea>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Price <span class="opt">(optional)</span></label>
+                  <input type="text" class="form-input" id="edit-price" value="â‚¹1,85,000">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">WhatsApp Number</label>
+                  <input type="text" class="form-input" id="edit-wa" value="+91 98765 43210">
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Instagram Post Link</label>
+                  <input type="url" class="form-input" id="edit-ig" value="https://instagram.com/p/example">
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Product Images</label>
+                  <div class="upload-area" onclick="document.getElementById('editFileInput').click()">
+                    <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
+                    <div class="upload-title">Add more images</div>
+                    <div class="upload-sub">or <b>click to browse</b></div>
+                  </div>
+                  <input type="file" id="editFileInput" multiple accept="image/*" style="display:none" onchange="handleEditFiles(this.files)">
+                  <div class="upload-preview" id="editPreview"></div>
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Status</label>
+                  <div class="status-group">
+                    <label class="status-opt active" onclick="selectStatus(this,'published')">
+                      <input type="radio" name="edit-status" value="published" checked>
+                      <div class="status-radio"></div>
+                      <div>
+                        <div class="status-text">Published</div>
+                        <div class="status-desc">Visible in catalog</div>
+                      </div>
+                    </label>
+                    <label class="status-opt" onclick="selectStatus(this,'hidden')">
+                      <input type="radio" name="edit-status" value="hidden">
+                      <div class="status-radio"></div>
+                      <div>
+                        <div class="status-text">Hidden</div>
+                        <div class="status-desc">Draft, not visible</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="goTo('products')">Cancel</button>
+                <button type="submit" class="btn btn-dark btn-lg">
+                  <i data-lucide="check"></i> Update Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ====== CATEGORIES ====== -->
+      <section class="page" id="page-categories">
+        <div class="page-head">
+          <div>
+            <h1>Categories</h1>
+            <p>Organize your jewelry collections</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCategoryModal()">
+            <i data-lucide="plus"></i> Add Category
+          </button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">All Categories</div>
+              <div class="card-sub" id="categoriesCount">6 categories</div>
+            </div>
+          </div>
+          <div class="cat-list" id="catList"></div>
+        </div>
+      </section>
+
+      <!-- ====== SETTINGS ====== -->
+      <section class="page" id="page-settings">
+        <div class="page-head">
+          <div>
+            <h1>Settings</h1>
+            <p>Manage your business information</p>
+          </div>
+        </div>
+
+        <form onsubmit="handleSaveSettings(event)" style="max-width:820px">
+          <!-- Business Info -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Business Information</div>
+                <div class="card-sub">Basic details about your store</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label">Business Name</label>
+                  <input type="text" class="form-input" value="Ciyora Jewels">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-input" value="hello@ciyorajewels.com">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Instagram URL</label>
+                  <input type="url" class="form-input" value="https://instagram.com/ciyorajewels">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">WhatsApp Number</label>
+                  <input type="text" class="form-input" value="+91 98765 43210">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Logo -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Brand Logo</div>
+                <div class="card-sub">Your store's logo</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="logo-upload">
+                <div class="logo-preview"></div>
+                <div class="logo-info">
+                  <h4>Ciyora Jewels Logo</h4>
+                  <p>PNG, JPG up to 2MB Â· Recommended 512Ã—512</p>
+                  <div class="logo-btns">
+                    <button type="button" class="btn btn-secondary btn-sm">Upload new</button>
+                    <button type="button" class="btn btn-ghost btn-sm">Remove</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Change Password</div>
+                <div class="card-sub">Keep your account secure</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="form-grid">
+                <div class="form-field">
+                  <label class="form-label">Current Password</label>
+                  <input type="password" class="form-input" placeholder="Enter current password">
+                </div>
+                <div class="form-field"></div>
+                <div class="form-field">
+                  <label class="form-label">New Password</label>
+                  <input type="password" class="form-input" placeholder="Enter new password">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Confirm Password</label>
+                  <input type="password" class="form-input" placeholder="Confirm new password">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions" style="margin-top:0;border-top:none;padding-top:0">
+            <button type="button" class="btn btn-secondary" onclick="goTo('dashboard')">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i data-lucide="save"></i> Save Changes
+            </button>
+          </div>
+        </form>
+
+        <div class="card data-tools-card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Catalog Data</div>
+              <div class="card-sub">Back up or restore this browser-local prototype</div>
+            </div>
+            <i data-lucide="database" class="data-tools-icon"></i>
+          </div>
+          <div class="card-body">
+            <p class="data-tools-note">Export a JSON backup before moving browsers or making a large catalog change. Importing replaces the current local catalog on this browser only.</p>
+            <div class="data-tools-actions">
+              <button type="button" class="btn btn-secondary" onclick="exportCatalog()"><i data-lucide="download"></i> Export Catalog</button>
+              <button type="button" class="btn btn-secondary" onclick="document.getElementById('catalogImportInput').click()"><i data-lucide="upload"></i> Import Catalog</button>
+              <button type="button" class="btn btn-danger" onclick="resetCatalog()"><i data-lucide="rotate-ccw"></i> Reset Demo Data</button>
+            </div>
+            <input type="file" id="catalogImportInput" accept="application/json,.json" style="display:none" onchange="importCatalog(this.files[0])">
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Mobile FAB -->
+  <button class="mobile-fab" onclick="goTo('add')" aria-label="Add product">
+    <i data-lucide="plus"></i>
+  </button>
+</div>
+
+<!-- Category Modal -->
+<div class="modal" id="categoryModal">
+  <div class="modal-box">
+    <div class="modal-icon" style="background:var(--gold-bg);color:var(--gold)"><i data-lucide="folder-plus"></i></div>
+    <div class="modal-title" id="categoryModalTitle">Add Category</div>
+    <div class="modal-text">Create a clear collection name so customers can browse your jewelry easily.</div>
+    <form onsubmit="saveCategory(event)">
+      <div class="form-field">
+        <label class="form-label" for="categoryNameInput">Category name</label>
+        <input class="form-input" id="categoryNameInput" type="text" placeholder="e.g. Gemstone Jewelry" maxlength="40" required>
+      </div>
+      <div class="form-field" style="margin-top:14px">
+        <label class="form-label" for="categoryIconInput">Icon name <span class="opt">(Lucide icon)</span></label>
+        <input class="form-input" id="categoryIconInput" type="text" placeholder="e.g. sparkles" maxlength="30" value="sparkles">
+      </div>
+      <div class="modal-actions" style="margin-top:22px">
+        <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save Category</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal" id="deleteModal">
+  <div class="modal-box">
+    <div class="modal-icon"><i data-lucide="trash-2"></i></div>
+    <div class="modal-title">Delete Product?</div>
+    <div class="modal-text">This action cannot be undone. The product will be permanently removed from your catalog.</div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">
+        <i data-lucide="trash-2"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="assets/js/catalog.js?v=2"></script>
+<script src="assets/js/admin.js?v=2"></script>
+</body>
+</html>
+
+
