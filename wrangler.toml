@@ -5,7 +5,7 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "ciyora-jewels"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "7efd6307-a8a7-4b01-8619-7db5e4855e93"
 migrations_dir = "migrations"
 
 [vars]
