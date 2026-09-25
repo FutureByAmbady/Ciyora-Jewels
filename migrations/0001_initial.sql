@@ -1,63 +1,63 @@
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS categories (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL UNIQUE COLLATE NOCASE,
-  icon TEXT NOT NULL DEFAULT 'folder',
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    icon TEXT NOT NULL DEFAULT 'folder',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 
 CREATE TABLE IF NOT EXISTS products (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  name TEXT NOT NULL,
-  category TEXT NOT NULL,
-  description TEXT NOT NULL DEFAULT '',
-  price TEXT NOT NULL DEFAULT 'Price on request',
-  material TEXT NOT NULL DEFAULT 'Not specified',
-  color TEXT NOT NULL DEFAULT 'Not specified',
-  weight TEXT NOT NULL DEFAULT 'Not specified',
-  sizes_json TEXT NOT NULL DEFAULT '["One Size"]',
-  badge TEXT NOT NULL DEFAULT '',
-  status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('published', 'hidden')),
-  image TEXT NOT NULL DEFAULT '',
-  images_json TEXT NOT NULL DEFAULT '[]',
-  whatsapp TEXT NOT NULL DEFAULT '',
-  instagram TEXT NOT NULL DEFAULT '',
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    category TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    price TEXT NOT NULL DEFAULT 'Price on request',
+    material TEXT NOT NULL DEFAULT 'Not specified',
+    color TEXT NOT NULL DEFAULT 'Not specified',
+    weight TEXT NOT NULL DEFAULT 'Not specified',
+    sizes_json TEXT NOT NULL DEFAULT '["One Size"]',
+    badge TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'published' CHECK (status IN ('published', 'hidden')),
+    image TEXT NOT NULL DEFAULT '',
+    images_json TEXT NOT NULL DEFAULT '[]',
+    whatsapp TEXT NOT NULL DEFAULT '',
+    instagram TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 
 CREATE INDEX IF NOT EXISTS products_status_idx ON products(status);
 CREATE INDEX IF NOT EXISTS products_category_idx ON products(category);
 
 CREATE TABLE IF NOT EXISTS settings (
-  id INTEGER PRIMARY KEY CHECK (id = 1),
-  business_name TEXT NOT NULL DEFAULT 'Ciyora Jewels',
-  email TEXT NOT NULL DEFAULT '',
-  instagram TEXT NOT NULL DEFAULT '',
-  whatsapp TEXT NOT NULL DEFAULT '',
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    business_name TEXT NOT NULL DEFAULT 'Ciyora Jewels',
+    email TEXT NOT NULL DEFAULT '',
+    instagram TEXT NOT NULL DEFAULT '',
+    whatsapp TEXT NOT NULL DEFAULT '',
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 
 CREATE TABLE IF NOT EXISTS admin_users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  email TEXT NOT NULL UNIQUE COLLATE NOCASE,
-  display_name TEXT NOT NULL DEFAULT 'Ciyora Admin',
-  password_hash TEXT NOT NULL,
-  password_salt TEXT NOT NULL,
-  password_iterations INTEGER NOT NULL DEFAULT 210000,
-  is_active INTEGER NOT NULL DEFAULT 1,
-  created_at TEXT NOT NULL DEFAULT (datetime('now')),
-  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    display_name TEXT NOT NULL DEFAULT 'Ciyora Admin',
+    password_hash TEXT NOT NULL,
+    password_salt TEXT NOT NULL,
+    password_iterations INTEGER NOT NULL DEFAULT 100000,
+    is_active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 
 CREATE TABLE IF NOT EXISTS sessions (
-  token TEXT PRIMARY KEY,
-  user_id INTEGER NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
-  expires_at TEXT NOT NULL,
-  created_at TEXT NOT NULL DEFAULT (datetime('now'))
-);
+    token TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+    expires_at TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+  );
 
 CREATE INDEX IF NOT EXISTS sessions_expiry_idx ON sessions(expires_at);
 CREATE INDEX IF NOT EXISTS sessions_user_idx ON sessions(user_id);
