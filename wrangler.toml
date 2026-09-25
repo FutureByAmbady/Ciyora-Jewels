@@ -10,3 +10,4 @@ migrations_dir = "migrations"
 
 [vars]
 ENVIRONMENT = "production"
+# Production D1 binding verified
