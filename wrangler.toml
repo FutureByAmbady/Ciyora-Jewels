@@ -11,3 +11,4 @@ migrations_dir = "migrations"
 [vars]
 ENVIRONMENT = "production"
 # Production D1 binding verified
+# Pages rebuild after GitHub access repair
