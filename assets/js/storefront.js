@@ -52,7 +52,7 @@
 
   function renderCategories(target=document.querySelector('.categories-grid')){
     if(!target) return;
-    target.innerHTML=categories.filter(c=>c.active!==false).map(c=>{const cp=categoryProducts(c);const src=c.image||image(cp.find(p=>image(p))||{});return `<a class="cat-card reveal" href="/category/${encodeURIComponent(c.slug)}"><div class="cat-image">${src?`<img src="${escapeHtml(src)}" alt="${escapeHtml(c.name)}" loading="lazy">`:'<span class="cat-placeholder">C</span>'}</div><div class="cat-overlay"><span>${pieceLabel(Number(c.count||cp.length))}</span><h3>${escapeHtml(c.name)}</h3><i data-lucide="arrow-up-right"></i></div></a>`;}).join('') || '<p class="empty-state">Collections are being curated.</p>';
+    target.innerHTML=categories.filter(c=>c.active!==false && c.slug!=='earings').map(c=>{const cp=categoryProducts(c);const src=c.image||image(cp.find(p=>image(p))||{});return `<a class="cat-card reveal" href="/category/${encodeURIComponent(c.slug)}"><div class="cat-image">${src?`<img src="${escapeHtml(src)}" alt="${escapeHtml(c.name)}" loading="lazy">`:'<span class="cat-placeholder">C</span>'}</div><div class="cat-overlay"><span>${pieceLabel(Number(c.count||cp.length))}</span><h3>${escapeHtml(c.name)}</h3><i data-lucide="arrow-up-right"></i></div></a>`;}).join('') || '<p class="empty-state">Collections are being curated.</p>';
     if(window.lucide) lucide.createIcons(); if(typeof observeReveals === 'function') observeReveals();
   }
 
