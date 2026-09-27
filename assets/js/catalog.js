@@ -1,6 +1,6 @@
 (() => {
   const API_BASE = '/api';
-  const repairText = value => String(value ?? '').replaceAll('â‚¹','₹').replaceAll('Â·','·').replaceAll('Ã©','é').replaceAll('Ã—','×');
+  const repairText = value => String(value ?? '').replaceAll('\u00e2\u201a\u00b9','\u20b9').replaceAll('\u00c2\u00b7','\u00b7').replaceAll('\u00c3\u201a\u00c2\u00b7','\u00b7').replaceAll('\u00c3\u00a9','\u00e9').replaceAll('\u00c3\u2014','\u00d7').replaceAll('\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u20ac\u009d','\u2014').replaceAll('\u00c3\u00a2\u00e2\u201e\u00a2\u00c2\u00a5','\u2665');
   const normalizeProduct = product => ({...product,name:repairText(product.name),desc:repairText(product.desc),price:repairText(product.price),cat:repairText(product.cat) === 'Temple' ? 'Temple Jewelry' : repairText(product.cat),status:product.status === 'hidden' ? 'hidden' : 'published',imgs:Array.isArray(product.imgs) && product.imgs.length ? product.imgs : (product.img ? [product.img] : []),img:product.img || product.imgs?.[0] || '',stone:repairText(product.stone),dimensions:repairText(product.dimensions)});
   const normalizeCatalog = payload => ({products:(payload.products || []).map(normalizeProduct),categories:(payload.categories || []).map(category => ({...category,name:repairText(category.name),count:Number(category.count) || 0})),settings:payload.settings || {businessName:'Ciyora Jewels',email:'',instagram:'',whatsapp:''}});
   class ApiError extends Error { constructor(message,status,code){super(message);this.status=status;this.code=code;} }
@@ -28,5 +28,13 @@
   const me = () => request('/auth/me');
   const logout = () => request('/auth/logout',{method:'POST',body:'{}'});
   const changePassword = payload => request('/auth/password',{method:'POST',body:JSON.stringify(payload)});
-  window.CiyoraCatalog = {getPublicCatalog,getAdminCatalog,createProduct,updateProduct,deleteProduct,createCategory,updateCategory,deleteCategory,replaceCatalog,saveSettings,login,me,logout,changePassword,ApiError};
+  const getReviews = productId => request(`/reviews?product_id=${encodeURIComponent(productId)}`);
+  const submitReview = payload => request('/reviews',{method:'POST',body:JSON.stringify(payload)});
+  const trackEvent = payload => fetch(`${API_BASE}/events`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(()=>{});
+  const getAdminReviews = status => request(`/admin/reviews${status?`?status=${encodeURIComponent(status)}`:''}`);
+  const moderateReview = payload => request('/admin/reviews',{method:'PUT',body:JSON.stringify(payload)});
+  const deleteReview = id => request(`/admin/reviews?id=${encodeURIComponent(id)}`,{method:'DELETE'});
+  const getAnalytics = () => request('/admin/analytics');
+  const getActivity = () => request('/admin/activity');
+  window.CiyoraCatalog = {getPublicCatalog,getAdminCatalog,createProduct,updateProduct,deleteProduct,createCategory,updateCategory,deleteCategory,replaceCatalog,saveSettings,login,me,logout,changePassword,getReviews,submitReview,trackEvent,getAdminReviews,moderateReview,deleteReview,getAnalytics,getActivity,ApiError};
 })();
