@@ -1,4 +1,4 @@
-  let products = [];
+﻿  let products = [];
   let categories = [];
   let settings = {};
   let currentUser = null;
@@ -139,7 +139,7 @@
   function renderRecent(){
     const list = document.getElementById('recentList');
     if(!list) return;
-    list.innerHTML = products.slice(0,5).map(p => `<div class="recent-item" onclick="openEdit(${Number(p.id)})"><div class="recent-img"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" onerror="this.style.display='none'"></div><div class="recent-info"><div class="recent-name">${escapeHtml(p.name)}</div><div class="recent-meta"><span>${escapeHtml(p.cat)}</span><span>·</span><span class="badge ${p.status==='published'?'badge-success':'badge-muted'}">${p.status==='published'?'Published':'Hidden'}</span></div></div><div class="recent-price">${escapeHtml(p.price)}</div></div>`).join('');
+    list.innerHTML = products.slice(0,5).map(p => `<div class="recent-item" onclick="openEdit(${Number(p.id)})"><div class="recent-img"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" onerror="this.style.display='none'"></div><div class="recent-info"><div class="recent-name">${escapeHtml(p.name)}</div><div class="recent-meta"><span>${escapeHtml(p.cat)}</span><span>Â·</span><span class="badge ${p.status==='published'?'badge-success':'badge-muted'}">${p.status==='published'?'Published':'Hidden'}</span></div></div><div class="recent-price">${escapeHtml(p.price)}</div></div>`).join('');
   }
   function renderProducts(){
     const q = (document.getElementById('productSearch')?.value || '').trim().toLowerCase();
@@ -210,7 +210,7 @@
     if(!category) return;
     const usage = products.filter(product => product.cat === category.name).length;
     if(usage) return showToast(`Move ${usage} product${usage === 1 ? '' : 's'} before deleting this category`,'info');
-    if(!window.confirm(`Delete the “${category.name}” category?`)) return;
+    if(!window.confirm(`Delete the â€œ${category.name}â€ category?`)) return;
     try { await CiyoraCatalog.deleteCategory(category.id); await reloadCatalog(); showToast('Category deleted','success'); } catch(error) { await handleApiError(error); }
   }
 
@@ -251,7 +251,7 @@
   async function handleSaveProduct(e){
     e.preventDefault();
     const form = e.currentTarget;
-    const product = {name:formValue('add-name') || 'Untitled Product',slug:formValue('add-slug'),sku:formValue('add-sku'),cat:form.querySelector('.form-select')?.value || 'Uncategorized',desc:form.querySelector('.form-textarea')?.value.trim() || '',price:formValue('add-price') || 'Price on request',stockQuantity:Number(formValue('add-stock') || 0),featured:document.getElementById('add-featured')?.checked || false,newArrival:document.getElementById('add-new-arrival')?.checked || false,whatsapp:form.querySelector('input[placeholder="+91 98765 43210"]')?.value.trim() || '',instagram:form.querySelector('input[type="url"]')?.value.trim() || '',material:'Not specified',color:'Not specified',weight:'Not specified',sizes:['One Size'],badge:'',status:form.querySelector('input[name="status"]:checked')?.value || 'published',imgs:getPreviewImages('uploadPreview')};
+    const product = {name:formValue('add-name') || 'Untitled Product',slug:formValue('add-slug'),sku:formValue('add-sku'),cat:form.querySelector('.form-select')?.value || 'Uncategorized',desc:form.querySelector('.form-textarea')?.value.trim() || '',price:formValue('add-price') || 'Price on request',stockQuantity:Number(formValue('add-stock') || 0),featured:document.getElementById('add-featured')?.checked || false,newArrival:document.getElementById('add-new-arrival')?.checked || false,whatsapp:form.querySelector('input[placeholder="7012812320"]')?.value.trim() || '',instagram:form.querySelector('input[type="url"]')?.value.trim() || '',material:'Not specified',color:'Not specified',weight:'Not specified',sizes:['One Size'],badge:'',status:form.querySelector('input[name="status"]:checked')?.value || 'published',imgs:getPreviewImages('uploadPreview')};
     try { await CiyoraCatalog.createProduct(product); form.reset(); document.getElementById('uploadPreview').innerHTML = ''; await reloadCatalog(); showToast('Product published successfully','success'); setTimeout(() => goTo('products'), 600); } catch(error) { await handleApiError(error); }
   }
   async function handleUpdateProduct(e){
@@ -343,3 +343,4 @@
       if(error.status && error.status !== 401 && !localStaticPreview) showLoginError(error.message || 'The admin service is unavailable.');
     }
   });
+
