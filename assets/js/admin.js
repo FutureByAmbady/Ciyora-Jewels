@@ -219,6 +219,11 @@
     if(!product) return;
     editingId = Number(id);
     document.getElementById('edit-name').value = product.name || '';
+    document.getElementById('edit-slug').value = product.slug || '';
+    document.getElementById('edit-sku').value = product.sku || '';
+    document.getElementById('edit-stock').value = Number(product.stockQuantity || 0);
+    document.getElementById('edit-featured').checked = Boolean(product.featured);
+    document.getElementById('edit-new-arrival').checked = Boolean(product.newArrival);
     renderCategoryOptions();
     document.getElementById('edit-category').value = product.cat || '';
     document.getElementById('edit-desc').value = product.desc || '';
@@ -246,15 +251,14 @@
   async function handleSaveProduct(e){
     e.preventDefault();
     const form = e.currentTarget;
-    const inputs = form.querySelectorAll('.form-input');
-    const product = {name:inputs[0]?.value.trim() || 'Untitled Product',cat:form.querySelector('.form-select')?.value || 'Uncategorized',desc:form.querySelector('.form-textarea')?.value.trim() || '',price:inputs[1]?.value.trim() || 'Price on request',whatsapp:inputs[2]?.value.trim() || '',instagram:form.querySelector('input[type="url"]')?.value.trim() || '',material:'Not specified',color:'Not specified',weight:'Not specified',sizes:['One Size'],badge:'',status:form.querySelector('input[name="status"]:checked')?.value || 'published',imgs:getPreviewImages('uploadPreview')};
+    const product = {name:formValue('add-name') || 'Untitled Product',slug:formValue('add-slug'),sku:formValue('add-sku'),cat:form.querySelector('.form-select')?.value || 'Uncategorized',desc:form.querySelector('.form-textarea')?.value.trim() || '',price:formValue('add-price') || 'Price on request',stockQuantity:Number(formValue('add-stock') || 0),featured:document.getElementById('add-featured')?.checked || false,newArrival:document.getElementById('add-new-arrival')?.checked || false,whatsapp:form.querySelector('input[placeholder="+91 98765 43210"]')?.value.trim() || '',instagram:form.querySelector('input[type="url"]')?.value.trim() || '',material:'Not specified',color:'Not specified',weight:'Not specified',sizes:['One Size'],badge:'',status:form.querySelector('input[name="status"]:checked')?.value || 'published',imgs:getPreviewImages('uploadPreview')};
     try { await CiyoraCatalog.createProduct(product); form.reset(); document.getElementById('uploadPreview').innerHTML = ''; await reloadCatalog(); showToast('Product published successfully','success'); setTimeout(() => goTo('products'), 600); } catch(error) { await handleApiError(error); }
   }
   async function handleUpdateProduct(e){
     e.preventDefault();
     const product = products.find(item => Number(item.id) === Number(editingId));
     if(!product) return;
-    const updated = {...product,id:editingId,name:formValue('edit-name'),cat:formValue('edit-category'),desc:formValue('edit-desc'),price:formValue('edit-price') || 'Price on request',whatsapp:formValue('edit-wa'),instagram:formValue('edit-ig'),status:document.querySelector('input[name="edit-status"]:checked')?.value || product.status,imgs:getPreviewImages('editPreview')};
+    const updated = {...product,id:editingId,name:formValue('edit-name'),slug:formValue('edit-slug'),sku:formValue('edit-sku'),cat:formValue('edit-category'),desc:formValue('edit-desc'),price:formValue('edit-price') || 'Price on request',stockQuantity:Number(formValue('edit-stock') || 0),featured:document.getElementById('edit-featured')?.checked || false,newArrival:document.getElementById('edit-new-arrival')?.checked || false,whatsapp:formValue('edit-wa'),instagram:formValue('edit-ig'),status:document.querySelector('input[name="edit-status"]:checked')?.value || product.status,imgs:getPreviewImages('editPreview')};
     try { await CiyoraCatalog.updateProduct(updated); await reloadCatalog(); showToast('Product updated successfully','success'); setTimeout(() => goTo('products'), 600); } catch(error) { await handleApiError(error); }
   }
 
