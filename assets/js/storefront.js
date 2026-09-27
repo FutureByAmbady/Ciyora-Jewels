@@ -58,11 +58,11 @@
   function handleSearch(q){if(q.trim())location.href=`/search?q=${encodeURIComponent(q.trim())}`;}
   document.querySelector('.nav-icons')?.insertAdjacentHTML('beforeend','<a href="/cart" class="nav-icon" aria-label="Cart"><i data-lucide="shopping-bag"></i></a>');
   window.addEventListener('popstate',renderRoute); window.addEventListener('DOMContentLoaded',()=>{if(window.lucide)lucide.createIcons();});
+  loadCatalog();
   const track=document.getElementById('testiTrack'),dots=document.getElementById('testiDots'); if(track&&dots){let slide=0;for(let i=0;i<track.children.length;i++){const d=document.createElement('div');d.className='testi-dot'+(!i?' active':'');d.onclick=()=>{slide=i;track.style.transform=`translateX(-${i*100}%)`;document.querySelectorAll('.testi-dot').forEach((x,j)=>x.classList.toggle('active',j===i));};dots.appendChild(d);}setInterval(()=>{slide=(slide+1)%track.children.length;track.style.transform=`translateX(-${slide*100}%)`;},5500);}
   const observer=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target);}}),{threshold:.12});document.querySelectorAll('.reveal').forEach(e=>observer.observe(e));
   window.addEventListener('scroll',()=>{const nav=document.getElementById('nav');if(nav)nav.style.background=scrollY>50?'rgba(17,17,17,.95)':'rgba(17,17,17,.85)';});
   document.querySelectorAll('#categoryFilters .filter-chip').forEach(chip=>chip.addEventListener('click',()=>{const value=chip.dataset.cat;if(value==='All') return; location.href=`/category/${encodeURIComponent(slugify(value))}`;}));
   document.querySelectorAll('#materialFilters .filter-chip').forEach(chip=>chip.addEventListener('click',()=>{const value=chip.dataset.mat;if(value!=='All') location.href=`/search?q=${encodeURIComponent(value)}`;}));
   window.CiyoraStore={addToCart,renderCart}; window.openProduct=openProduct;window.filterCategory=filterCategory;window.toggleFav=toggleFav;window.openSearch=openSearch;window.closeSearch=closeSearch;window.handleSearch=handleSearch;window.addToCart=addToCart;window.changeCart=changeCart;window.removeCart=removeCart;window.changeRouteThumb=changeRouteThumb;window.showToast=showToast;
-  loadCatalog();
 })();
