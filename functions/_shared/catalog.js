@@ -2,126 +2,103 @@ const MAX_TEXT = 5000;
 const MAX_IMAGE_URL = 2_000_000;
 
 const text = (value, fallback = '') => String(value ?? fallback).trim().slice(0, MAX_TEXT);
+const slugify = value => text(value).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 160);
 const safeJson = (value, fallback) => {
-  try {
-    const parsed = JSON.parse(value || '');
-    return parsed;
-  } catch {
-    return fallback;
-  }
+  try { return JSON.parse(value || ''); } catch { return fallback; }
+};
+const numericPrice = value => {
+  const parsed = Number(String(value ?? '').replace(/[^0-9.]/g, ''));
+  return Number.isFinite(parsed) ? parsed : 0;
 };
 
 export function productFromRow(row) {
   const imgs = Array.isArray(safeJson(row.images_json, [])) ? safeJson(row.images_json, []) : [];
   const sizes = Array.isArray(safeJson(row.sizes_json, [])) ? safeJson(row.sizes_json, []) : ['One Size'];
   return {
-    id: Number(row.id),
-    name: row.name,
-    cat: row.category,
-    desc: row.description || '',
-    price: row.price || 'Price on request',
-    material: row.material || 'Not specified',
-    color: row.color || 'Not specified',
-    weight: row.weight || 'Not specified',
-    sizes,
-    badge: row.badge || '',
-    status: row.status === 'hidden' ? 'hidden' : 'published',
-    img: row.image || imgs[0] || '',
-    imgs,
-    whatsapp: row.whatsapp || '',
-    instagram: row.instagram || '',
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
+    id: Number(row.id), name: row.name, slug: row.slug || slugify(row.name), sku: row.sku || '',
+    cat: row.category, desc: row.description || '', shortDescription: row.short_description || row.description || '',
+    price: row.price || 'Price on request', compareAtPrice: row.compare_at_price || '', priceAmount: Number(row.price_amount || numericPrice(row.price)),
+    material: row.material || 'Not specified', color: row.color || 'Not specified', weight: row.weight || 'Not specified',
+    sizes, badge: row.badge || '', status: row.status === 'hidden' ? 'hidden' : 'published', active: Number(row.is_active ?? 1) === 1,
+    stockQuantity: Number(row.stock_quantity || 0), stockStatus: row.stock_status || (Number(row.stock_quantity || 0) > 0 ? 'in_stock' : 'out_of_stock'),
+    featured: Number(row.is_featured || 0) === 1, newArrival: Number(row.is_new_arrival || 0) === 1,
+    img: row.image || imgs[0] || '', imgs, whatsapp: row.whatsapp || '', instagram: row.instagram || '',
+    careInstructions: row.care_instructions || '', shippingInformation: row.shipping_information || '', returnInformation: row.return_information || '',
+    createdAt: row.created_at, updatedAt: row.updated_at,
   };
 }
 
 export function categoryFromRow(row) {
-  return {
-    id: Number(row.id),
-    name: row.name,
-    count: Number(row.product_count || 0),
-    icon: row.icon || 'folder',
-  };
+  return { id: Number(row.id), name: row.name, slug: row.slug || slugify(row.name), description: row.description || '', image: row.image || '', count: Number(row.product_count || 0), icon: row.icon || 'folder', displayOrder: Number(row.display_order || 0), active: Number(row.is_active ?? 1) === 1, featured: Number(row.is_featured || 0) === 1 };
 }
 
 export function settingsFromRow(row) {
-  return {
-    businessName: row?.business_name || 'Ciyora Jewels',
-    email: row?.email || '',
-    instagram: row?.instagram || '',
-    whatsapp: row?.whatsapp || '',
-  };
+  return { businessName: row?.business_name || 'Ciyora Jewels', email: row?.email || '', instagram: row?.instagram || '', whatsapp: row?.whatsapp || '' };
 }
 
 export function normalizeProductInput(input, { requireId = false } = {}) {
   if (!input || typeof input !== 'object') throw Object.assign(new Error('Product data is required.'), { status: 400, code: 'invalid_product' });
   const id = Number(input.id);
   if (requireId && (!Number.isInteger(id) || id <= 0)) throw Object.assign(new Error('A valid product id is required.'), { status: 400, code: 'invalid_product_id' });
-  const images = (Array.isArray(input.imgs) ? input.imgs : (input.img ? [input.img] : []))
-    .map(item => text(item, '').slice(0, MAX_IMAGE_URL))
-    .filter(Boolean)
-    .slice(0, 8);
+  const images = (Array.isArray(input.imgs) ? input.imgs : (input.img ? [input.img] : [])).map(item => text(item, '').slice(0, MAX_IMAGE_URL)).filter(Boolean).slice(0, 10);
   const category = text(input.cat || input.category, 'Uncategorized').slice(0, 120);
   const name = text(input.name).slice(0, 180);
   if (!name || !category) throw Object.assign(new Error('Product name and category are required.'), { status: 400, code: 'invalid_product' });
+  const stockQuantity = Math.max(0, Math.floor(Number(input.stockQuantity ?? input.stock_quantity ?? 0) || 0));
+  const requestedStatus = input.status === 'hidden' ? 'hidden' : 'published';
   return {
-    id: Number.isInteger(id) && id > 0 ? id : null,
-    name,
-    category,
-    description: text(input.desc || input.description).slice(0, 2000),
-    price: text(input.price, 'Price on request').slice(0, 80),
-    material: text(input.material, 'Not specified').slice(0, 180),
-    color: text(input.color, 'Not specified').slice(0, 80),
-    weight: text(input.weight, 'Not specified').slice(0, 80),
-    sizes: (Array.isArray(input.sizes) ? input.sizes : ['One Size']).map(item => text(item).slice(0, 40)).filter(Boolean).slice(0, 20),
-    badge: text(input.badge).slice(0, 40),
-    status: input.status === 'hidden' ? 'hidden' : 'published',
-    image: text(input.img || images[0]).slice(0, MAX_IMAGE_URL),
-    images,
-    whatsapp: text(input.whatsapp).slice(0, 80),
-    instagram: text(input.instagram).slice(0, 500),
+    id: Number.isInteger(id) && id > 0 ? id : null, name, slug: slugify(input.slug || name), sku: text(input.sku).slice(0, 80), category,
+    description: text(input.desc || input.description).slice(0, 2000), shortDescription: text(input.shortDescription || input.short_description || input.desc || input.description).slice(0, 500),
+    price: text(input.price, 'Price on request').slice(0, 80), compareAtPrice: text(input.compareAtPrice || input.compare_at_price).slice(0, 80), priceAmount: numericPrice(input.priceAmount ?? input.price),
+    material: text(input.material, 'Not specified').slice(0, 180), color: text(input.color, 'Not specified').slice(0, 80), weight: text(input.weight, 'Not specified').slice(0, 80),
+    sizes: (Array.isArray(input.sizes) ? input.sizes : ['One Size']).map(item => text(item).slice(0, 40)).filter(Boolean).slice(0, 20), badge: text(input.badge).slice(0, 40),
+    status: requestedStatus, active: input.active === false || input.is_active === 0 ? 0 : 1, stockQuantity,
+    stockStatus: stockQuantity <= 0 ? 'out_of_stock' : stockQuantity < 5 ? 'low_stock' : 'in_stock',
+    featured: input.featured === true || input.is_featured === 1 || input.badge === 'Featured' ? 1 : 0,
+    newArrival: input.newArrival === true || input.is_new_arrival === 1 || input.badge === 'New' ? 1 : 0,
+    image: text(input.img || images[0]).slice(0, MAX_IMAGE_URL), images,
+    whatsapp: text(input.whatsapp).slice(0, 80), instagram: text(input.instagram).slice(0, 500),
+    careInstructions: text(input.careInstructions || input.care_instructions).slice(0, 2000), shippingInformation: text(input.shippingInformation || input.shipping_information).slice(0, 2000), returnInformation: text(input.returnInformation || input.return_information).slice(0, 2000),
   };
 }
 
 export function normalizeCategoryInput(input, { requireId = false } = {}) {
   if (!input || typeof input !== 'object') throw Object.assign(new Error('Category data is required.'), { status: 400, code: 'invalid_category' });
-  const id = Number(input.id);
-  if (requireId && (!Number.isInteger(id) || id <= 0)) throw Object.assign(new Error('A valid category id is required.'), { status: 400, code: 'invalid_category_id' });
-  const name = text(input.name).slice(0, 120);
-  if (!name) throw Object.assign(new Error('Category name is required.'), { status: 400, code: 'invalid_category' });
-  return { id: Number.isInteger(id) && id > 0 ? id : null, name, icon: text(input.icon, 'folder').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40) || 'folder' };
+  const id = Number(input.id); if (requireId && (!Number.isInteger(id) || id <= 0)) throw Object.assign(new Error('A valid category id is required.'), { status: 400, code: 'invalid_category_id' });
+  const name = text(input.name).slice(0, 120); if (!name) throw Object.assign(new Error('Category name is required.'), { status: 400, code: 'invalid_category' });
+  return { id: Number.isInteger(id) && id > 0 ? id : null, name, slug: slugify(input.slug || name), description: text(input.description).slice(0, 1000), image: text(input.image).slice(0, MAX_IMAGE_URL), icon: text(input.icon, 'folder').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40) || 'folder', displayOrder: Math.max(0, Math.floor(Number(input.displayOrder ?? input.display_order ?? 0) || 0)), active: input.active === false || input.is_active === 0 ? 0 : 1, featured: input.featured === true || input.is_featured === 1 ? 1 : 0 };
 }
 
-export async function readCatalog(db, { includeHidden = false } = {}) {
-  const productQuery = includeHidden
-    ? 'SELECT * FROM products ORDER BY id DESC'
-    : "SELECT * FROM products WHERE status = 'published' ORDER BY id DESC";
+export async function readCatalog(db, { includeHidden = false, query = {} } = {}) {
+  const args = [];
+  const where = includeHidden ? ['1=1'] : ["p.status = 'published'", 'p.is_active = 1'];
+  const q = text(query.q || query.search);
+  if (q) { where.push('(p.name LIKE ? OR p.sku LIKE ? OR p.category LIKE ? OR p.material LIKE ? OR p.description LIKE ?)'); args.push(...Array(5).fill(`%${q}%`)); }
+  if (query.category) { where.push('(c.slug = ? OR p.category = ?)'); args.push(text(query.category), text(query.category)); }
+  if (query.slug) { where.push('p.slug = ?'); args.push(text(query.slug)); }
+  if (query.material) { where.push('p.material LIKE ?'); args.push(`%${text(query.material)}%`); }
+  if (query.featured === '1' || query.featured === 'true') where.push('p.is_featured = 1');
+  if (query.newArrival === '1' || query.newArrival === 'true') where.push('p.is_new_arrival = 1');
+  if (query.available === '1' || query.available === 'true') where.push('p.stock_quantity > 0');
+  const sortMap = { price_asc: 'p.price_amount ASC', price_desc: 'p.price_amount DESC', name: 'p.name COLLATE NOCASE ASC', featured: 'p.is_featured DESC, p.created_at DESC', newest: 'p.created_at DESC' };
+  const order = sortMap[text(query.sort)] || 'p.created_at DESC, p.id DESC';
+  const productSql = `SELECT p.* FROM products p LEFT JOIN categories c ON c.name = p.category WHERE ${where.join(' AND ')} ORDER BY ${order} LIMIT 100`;
+  const categoryWhere = includeHidden ? '1=1' : 'c.is_active = 1';
   const [productResult, categoryResult, settingsResult] = await Promise.all([
-    db.prepare(productQuery).all(),
-    db.prepare('SELECT c.*, COUNT(p.id) AS product_count FROM categories c LEFT JOIN products p ON p.category = c.name GROUP BY c.id ORDER BY c.id ASC').all(),
+    db.prepare(productSql).bind(...args).all(),
+    db.prepare(`SELECT c.*, COUNT(CASE WHEN p.status = 'published' AND p.is_active = 1 THEN p.id END) AS product_count FROM categories c LEFT JOIN products p ON p.category = c.name WHERE ${categoryWhere} GROUP BY c.id ORDER BY c.display_order ASC, c.id ASC`).all(),
     db.prepare('SELECT * FROM settings WHERE id = 1').first(),
   ]);
-  return {
-    products: (productResult.results || []).map(productFromRow),
-    categories: (categoryResult.results || []).map(categoryFromRow),
-    settings: settingsFromRow(settingsResult),
-  };
+  return { products: (productResult.results || []).map(productFromRow), categories: (categoryResult.results || []).map(categoryFromRow), settings: settingsFromRow(settingsResult) };
 }
 
 export function productStatements(db, product, { update = false } = {}) {
-  const fields = [
-    product.name, product.category, product.description, product.price, product.material,
-    product.color, product.weight, JSON.stringify(product.sizes), product.badge, product.status,
-    product.image, JSON.stringify(product.images), product.whatsapp, product.instagram,
-  ];
-  if (update) {
-    return db.prepare(`UPDATE products SET name = ?, category = ?, description = ?, price = ?, material = ?, color = ?, weight = ?, sizes_json = ?, badge = ?, status = ?, image = ?, images_json = ?, whatsapp = ?, instagram = ?, updated_at = datetime('now') WHERE id = ?`).bind(...fields, product.id);
-  }
-  return db.prepare(`INSERT INTO products (name, category, description, price, material, color, weight, sizes_json, badge, status, image, images_json, whatsapp, instagram) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .bind(...fields);
+  const fields = [product.name, product.slug, product.sku, product.category, product.description, product.shortDescription, product.price, product.compareAtPrice, product.priceAmount, product.material, product.color, product.weight, JSON.stringify(product.sizes), product.badge, product.status, product.image, JSON.stringify(product.images), product.whatsapp, product.instagram, product.stockQuantity, product.stockStatus, product.active, product.featured, product.newArrival, product.careInstructions, product.shippingInformation, product.returnInformation];
+  if (update) return db.prepare(`UPDATE products SET name=?, slug=?, sku=?, category=?, description=?, short_description=?, price=?, compare_at_price=?, price_amount=?, material=?, color=?, weight=?, sizes_json=?, badge=?, status=?, image=?, images_json=?, whatsapp=?, instagram=?, stock_quantity=?, stock_status=?, is_active=?, is_featured=?, is_new_arrival=?, care_instructions=?, shipping_information=?, return_information=?, updated_at=datetime('now') WHERE id=?`).bind(...fields, product.id);
+  return db.prepare(`INSERT INTO products (name,slug,sku,category,description,short_description,price,compare_at_price,price_amount,material,color,weight,sizes_json,badge,status,image,images_json,whatsapp,instagram,stock_quantity,stock_status,is_active,is_featured,is_new_arrival,care_instructions,shipping_information,return_information) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(...fields);
 }
 
 export function categoryStatements(db, category, { update = false } = {}) {
-  if (update) return db.prepare('UPDATE categories SET name = ?, icon = ?, updated_at = datetime(\'now\') WHERE id = ?').bind(category.name, category.icon, category.id);
-  return db.prepare('INSERT INTO categories (name, icon) VALUES (?, ?)').bind(category.name, category.icon);
+  if (update) return db.prepare(`UPDATE categories SET name=?, slug=?, description=?, image=?, icon=?, display_order=?, is_active=?, is_featured=?, updated_at=datetime('now') WHERE id=?`).bind(category.name, category.slug, category.description, category.image, category.icon, category.displayOrder, category.active, category.featured, category.id);
+  return db.prepare(`INSERT INTO categories (name,slug,description,image,icon,display_order,is_active,is_featured) VALUES (?,?,?,?,?,?,?,?)`).bind(category.name, category.slug, category.description, category.image, category.icon, category.displayOrder, category.active, category.featured);
 }
