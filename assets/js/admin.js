@@ -1,4 +1,4 @@
-﻿  let products = [];
+  let products = [];
   let categories = [];
   let settings = {};
   let currentUser = null;
@@ -141,6 +141,18 @@
     if(!list) return;
     list.innerHTML = products.slice(0,5).map(p => `<div class="recent-item" onclick="openEdit(${Number(p.id)})"><div class="recent-img"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" onerror="this.style.display='none'"></div><div class="recent-info"><div class="recent-name">${escapeHtml(p.name)}</div><div class="recent-meta"><span>${escapeHtml(p.cat)}</span><span>Â·</span><span class="badge ${p.status==='published'?'badge-success':'badge-muted'}">${p.status==='published'?'Published':'Hidden'}</span></div></div><div class="recent-price">${escapeHtml(p.price)}</div></div>`).join('');
   }
+  function productIssues(product){
+    return [
+      ['SKU', !String(product.sku || '').trim()],
+      ['image', !(product.imgs?.length || product.img)],
+      ['description', !String(product.desc || product.shortDescription || '').trim()],
+      ['category', !String(product.cat || '').trim()],
+      ['price', !String(product.price || '').trim()],
+      ['dimensions', !String(product.dimensions || '').trim()],
+      ['stone', !String(product.stone || '').trim()],
+      ['stock', product.stockQuantity === undefined || product.stockQuantity === null]
+    ].filter(([,missing]) => missing).map(([label]) => label);
+  }
   function renderProducts(){
     const q = (document.getElementById('productSearch')?.value || '').trim().toLowerCase();
     const status = document.getElementById('productStatusFilter')?.value || 'all';
@@ -158,14 +170,14 @@
     if(products.length === 0){ wrap.style.display = 'none'; empty.style.display = 'block'; }
     else {
       wrap.style.display = 'block'; empty.style.display = 'none';
-      tbody.innerHTML = filtered.length ? filtered.map(p => { const published = p.status === 'published'; return `<tr><td><div class="prod-cell"><div class="prod-img"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" onerror="this.style.display='none'"></div><div><div class="prod-name">${escapeHtml(p.name)}</div><div class="prod-cat">${escapeHtml(p.price)}</div></div></div></td><td><span style="font-size:13px">${escapeHtml(p.cat)}</span></td><td><span class="badge ${published?'badge-success':'badge-muted'}">${published?'Published':'Hidden'}</span></td><td><div class="actions-cell" style="justify-content:flex-end"><button class="action-btn edit" onclick="openEdit(${Number(p.id)})" title="Edit" aria-label="Edit"><i data-lucide="pencil"></i></button><button class="action-btn hide" onclick="toggleStatus(${Number(p.id)})" title="${published?'Hide':'Show'}" aria-label="Toggle visibility"><i data-lucide="${published?'eye-off':'eye'}"></i></button><button class="action-btn delete" onclick="openDelete(${Number(p.id)})" title="Delete" aria-label="Delete"><i data-lucide="trash-2"></i></button></div></td></tr>`; }).join('') : '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--muted)">No products match these filters</td></tr>';
+      tbody.innerHTML = filtered.length ? filtered.map(p => { const published = p.status === 'published'; const issues = productIssues(p); const quality = issues.length ? `<span class="badge badge-muted" title="Missing: ${escapeHtml(issues.join(', '))}">Needs data: ${issues.length}</span>` : '<span class="badge badge-success">Complete</span>'; return `<tr><td><div class="prod-cell"><div class="prod-img"><img src="${escapeHtml(p.img)}" alt="${escapeHtml(p.name)}" onerror="this.style.display='none'"></div><div><div class="prod-name">${escapeHtml(p.name)}</div><div class="prod-cat">${escapeHtml(p.price)}</div><div style="margin-top:5px">${quality}</div></div></div></td><td><span style="font-size:13px">${escapeHtml(p.cat)}</span></td><td><span class="badge ${published?'badge-success':'badge-muted'}">${published?'Published':'Hidden'}</span></td><td><div class="actions-cell" style="justify-content:flex-end"><button class="action-btn edit" onclick="openEdit(${Number(p.id)})" title="Edit" aria-label="Edit"><i data-lucide="pencil"></i></button><button class="action-btn hide" onclick="toggleStatus(${Number(p.id)})" title="${published?'Hide':'Show'}" aria-label="Toggle visibility"><i data-lucide="${published?'eye-off':'eye'}"></i></button><button class="action-btn delete" onclick="openDelete(${Number(p.id)})" title="Delete" aria-label="Delete"><i data-lucide="trash-2"></i></button></div></td></tr>`; }).join('') : '<tr><td colspan="4" style="text-align:center;padding:40px;color:var(--muted)">No products match these filters</td></tr>';
     }
     document.getElementById('productsCount').textContent = `${filtered.length} of ${products.length} item${products.length!==1?'s':''}`;
   }
   function renderCategories(){
     const list = document.getElementById('catList');
     if(!list) return;
-    const counts = products.reduce((result, product) => { result[product.cat] = (result[product.cat] || 0) + 1; return result; }, {});
+    const counts = products.filter(product => product.status === 'published' && product.active !== false).reduce((result, product) => { result[product.cat] = (result[product.cat] || 0) + 1; return result; }, {});
     list.innerHTML = categories.map((c,i) => `<div class="cat-item"><div class="cat-icon"><i data-lucide="${escapeHtml(c.icon || 'folder')}"></i></div><div class="cat-name">${escapeHtml(c.name)}</div><div class="cat-count">${counts[c.name] || 0} product${(counts[c.name] || 0) === 1 ? '' : 's'}</div><button class="action-btn edit" onclick="openCategoryModal(${i})" title="Edit" aria-label="Edit category"><i data-lucide="pencil"></i></button><button class="action-btn delete" onclick="deleteCategory(${i})" title="Delete" aria-label="Delete category"><i data-lucide="trash-2"></i></button></div>`).join('');
     const countLabel = document.getElementById('categoriesCount');
     if(countLabel) countLabel.textContent = `${categories.length} categor${categories.length === 1 ? 'y' : 'ies'}`;
@@ -290,32 +302,6 @@
       showToast('Settings saved securely','success');
     } catch(error) { await handleApiError(error); }
   }
-  function exportCatalog(){
-    const blob = new Blob([JSON.stringify({version:2,exportedAt:new Date().toISOString(),products,categories,settings},null,2)],{type:'application/json'});
-    const url = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = url; link.download = `ciyora-catalog-${new Date().toISOString().slice(0,10)}.json`; document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url); showToast('Catalog backup downloaded','success');
-  }
-  function importCatalog(file){
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = async event => {
-      try {
-        const payload = JSON.parse(event.target.result);
-        if(!Array.isArray(payload.products) || !Array.isArray(payload.categories)) throw new Error('Invalid catalog format');
-        const importedProducts = payload.products.filter(item => item && item.name && item.cat).map(item => ({...item,id:undefined,name:String(item.name).trim(),cat:String(item.cat).trim(),status:item.status === 'hidden' ? 'hidden' : 'published',imgs:Array.isArray(item.imgs) ? item.imgs.filter(Boolean) : (item.img ? [item.img] : []),img:item.img || ''}));
-        const importedCategories = payload.categories.filter(item => item && item.name).map(item => ({name:String(item.name).trim(),icon:String(item.icon || 'folder').toLowerCase().replace(/[^a-z0-9-]/g,'') || 'folder'}));
-        if(!importedProducts.length && !importedCategories.length) throw new Error('The backup contains no catalog data');
-        await CiyoraCatalog.replaceCatalog({products:importedProducts,categories:importedCategories,settings:payload.settings || settings});
-        await reloadCatalog(); showToast(`Imported ${products.length} products and ${categories.length} categories`,'success');
-      } catch(error) { await handleApiError(error); }
-      document.getElementById('catalogImportInput').value = '';
-    };
-    reader.readAsText(file);
-  }
-  async function resetCatalog(){
-    if(!window.confirm('Reset the online catalog to the original Ciyora demo data?')) return;
-    try { await CiyoraCatalog.replaceCatalog(CiyoraCatalog.getDemoCatalog()); await reloadCatalog(); showToast('Demo catalog restored','success'); } catch(error) { await handleApiError(error); }
-  }
-
   function handleGlobalSearch(val){ if(!val.trim()) return; goTo('products'); setTimeout(() => { document.getElementById('productSearch').value = val; renderProducts(); }, 100); }
   function handleFiles(files){ addFiles(files,'uploadPreview'); }
   function handleEditFiles(files){ addFiles(files,'editPreview'); }
