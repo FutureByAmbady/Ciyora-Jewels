@@ -1,5 +1,5 @@
 import { requireAuth } from '../../../_shared/auth.js';
-import { normalizeCategoryInput, categoryFromRow, categoryStatements } from '../../../_shared/catalog.js';
+import { normalizeCategoryInput, categoryFromRow, categoryStatements, recordActivity } from '../../../_shared/catalog.js';
 import { json, error, handleError, readJson } from '../../../_shared/http.js';
 
 export async function onRequestPost({ request, env }) {
@@ -8,6 +8,7 @@ export async function onRequestPost({ request, env }) {
     const category = normalizeCategoryInput(await readJson(request));
     const result = await categoryStatements(env.DB, category).run();
     const row = await env.DB.prepare('SELECT * FROM categories WHERE id = ?').bind(result.meta.last_row_id).first();
+    await recordActivity(env.DB, { eventType: 'category_created', message: `Category created: ${category.name}`, categoryId: Number(result.meta.last_row_id) });
     return json({ category: categoryFromRow(row) }, 201);
   } catch (err) {
     return handleError(err);
@@ -25,6 +26,7 @@ export async function onRequestPut({ request, env }) {
       env.DB.prepare('UPDATE products SET category = ?, updated_at = datetime(\'now\') WHERE category = ?').bind(category.name, existing.name),
     ]);
     const row = await env.DB.prepare('SELECT * FROM categories WHERE id = ?').bind(category.id).first();
+    await recordActivity(env.DB, { eventType: category.active ? 'category_updated' : 'category_archived', message: `${category.active ? 'Category updated' : 'Category archived'}: ${category.name}`, categoryId: category.id });
     return json({ category: categoryFromRow(row) });
   } catch (err) {
     return handleError(err);
