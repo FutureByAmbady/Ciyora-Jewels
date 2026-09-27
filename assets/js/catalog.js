@@ -12,7 +12,7 @@
   ];
   const seedCategories = [{name:'Rings',count:12,icon:'circle'},{name:'Necklaces',count:18,icon:'link'},{name:'Bracelets',count:9,icon:'watch'},{name:'Earrings',count:15,icon:'sparkles'},{name:'Bridal',count:8,icon:'heart'},{name:'Temple Jewelry',count:6,icon:'landmark'}];
   const copy = value => JSON.parse(JSON.stringify(value));
-  const repairText = value => String(value ?? '').replaceAll('â‚¹','₹').replaceAll('Â·','·').replaceAll('Ã©','é').replaceAll('Ã—','×');
+  const repairText = value => String(value ?? '').replaceAll('₹','₹').replaceAll('·','·').replaceAll('é','é').replaceAll('×','×');
   const normalizeProduct = product => ({...product,name:repairText(product.name),desc:repairText(product.desc),price:repairText(product.price),cat:repairText(product.cat) === 'Temple' ? 'Temple Jewelry' : repairText(product.cat),status:product.status === 'hidden' ? 'hidden' : 'published',imgs:Array.isArray(product.imgs) && product.imgs.length ? product.imgs : (product.img ? [product.img] : []),img:product.img || product.imgs?.[0] || ''});
   const normalizeCatalog = payload => ({products:(payload.products || []).map(normalizeProduct),categories:(payload.categories || []).map(category => ({...category,name:repairText(category.name),count:Number(category.count) || 0})),settings:payload.settings || {businessName:'Ciyora Jewels',email:'',instagram:'',whatsapp:''}});
   class ApiError extends Error { constructor(message,status,code){super(message);this.status=status;this.code=code;} }
