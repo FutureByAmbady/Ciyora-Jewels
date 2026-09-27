@@ -251,7 +251,7 @@
   async function handleSaveProduct(e){
     e.preventDefault();
     const form = e.currentTarget;
-    const product = {name:formValue('add-name') || 'Untitled Product',slug:formValue('add-slug'),sku:formValue('add-sku'),cat:form.querySelector('.form-select')?.value || 'Uncategorized',desc:form.querySelector('.form-textarea')?.value.trim() || '',price:formValue('add-price') || 'Price on request',stockQuantity:Number(formValue('add-stock') || 0),featured:document.getElementById('add-featured')?.checked || false,newArrival:document.getElementById('add-new-arrival')?.checked || false,whatsapp:form.querySelector('input[placeholder="7012812320"]')?.value.trim() || '',instagram:form.querySelector('input[type="url"]')?.value.trim() || '',material:'Not specified',color:'Not specified',weight:'Not specified',sizes:['One Size'],badge:'',status:form.querySelector('input[name="status"]:checked')?.value || 'published',imgs:getPreviewImages('uploadPreview')};
+    const product = {name:formValue('add-name') || 'Untitled Product',slug:formValue('add-slug'),sku:formValue('add-sku'),cat:form.querySelector('.form-select')?.value || 'Uncategorized',desc:form.querySelector('.form-textarea')?.value.trim() || '',price:formValue('add-price') || 'Price on request',stockQuantity:Number(formValue('add-stock') || 0),featured:document.getElementById('add-featured')?.checked || false,newArrival:document.getElementById('add-new-arrival')?.checked || false,whatsapp:form.querySelector('input[placeholder="Enter WhatsApp number"]')?.value.trim() || '',instagram:form.querySelector('input[type="url"]')?.value.trim() || '',material:'Not specified',color:'Not specified',weight:'Not specified',sizes:['One Size'],badge:'',status:form.querySelector('input[name="status"]:checked')?.value || 'published',imgs:getPreviewImages('uploadPreview')};
     try { await CiyoraCatalog.createProduct(product); form.reset(); document.getElementById('uploadPreview').innerHTML = ''; await reloadCatalog(); showToast('Product published successfully','success'); setTimeout(() => goTo('products'), 600); } catch(error) { await handleApiError(error); }
   }
   async function handleUpdateProduct(e){
@@ -343,4 +343,5 @@
       if(error.status && error.status !== 401 && !localStaticPreview) showLoginError(error.message || 'The admin service is unavailable.');
     }
   });
+
 
