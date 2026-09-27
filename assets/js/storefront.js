@@ -127,7 +127,7 @@
         list.innerHTML = results.map(p => `
           <div class="search-result-item" onclick="closeSearch();openProduct(${p.id})">
             <img src="${p.img}" alt="">
-            <div class="info"><h5>${p.name}</h5><span>${p.cat} Â· ${p.price}</span></div>
+            <div class="info"><h5>${p.name}</h5><span>${p.cat} · ${p.price}</span></div>
           </div>
         `).join('');
       }
