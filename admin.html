@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Ciyora Jewels — Admin Dashboard</title>
+<title>Ciyora Jewels â€” Admin Dashboard</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@5.0.19/latin-400-normal.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@5.0.19/latin-500-normal.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@5.0.19/latin-600-normal.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/inter@5.0.19/latin-700-normal.css" />
 <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
-<link rel="icon" href="assets/images/brand/ciyora-logo.jpg" type="image/jpeg"><link rel="stylesheet" href="assets/css/admin.css?v=2">
+<link rel="icon" href="/assets/images/brand/ciyora-logo.jpg" type="image/jpeg"><link rel="stylesheet" href="/assets/css/admin.css?v=3">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
       <div class="login-logo-mono"><img src="assets/images/brand/ciyora-logo.jpg" alt=""></div>
       <div class="login-logo-text">
         <span class="login-logo-main">CIYORA</span>
-        <span class="login-logo-sub">JEWELS · ADMIN</span>
+        <span class="login-logo-sub">JEWELS Â· ADMIN</span>
       </div>
     </div>
     <h2 class="login-title">Welcome back</h2>
@@ -37,7 +37,7 @@
       </div>
       <div id="loginError" class="form-hint" role="alert" hidden></div><button type="submit" class="login-btn">Sign In</button>
     </form>
-    <div class="login-footer">Protected admin area · Ciyora Jewels © 2026</div>
+    <div class="login-footer">Protected admin area Â· Ciyora Jewels Â© 2026</div>
   </div>
 </div>
 
@@ -294,7 +294,15 @@
               <div class="form-grid">
                 <div class="form-field">
                   <label class="form-label">Product Name</label>
-                  <input type="text" class="form-input" placeholder="e.g. Celestial Diamond Ring" required>
+                  <input type="text" id="add-name" class="form-input" placeholder="e.g. Celestial Diamond Ring" required>
+                </div>
+                <div class="form-field">
+                  <label class="form-label">URL Slug <span class="opt">(optional)</span></label>
+                  <input type="text" id="add-slug" class="form-input" placeholder="celestial-diamond-ring">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">SKU <span class="opt">(optional)</span></label>
+                  <input type="text" id="add-sku" class="form-input" placeholder="CJ-RING-001">
                 </div>
                 <div class="form-field">
                   <label class="form-label">Category</label>
@@ -314,7 +322,11 @@
                 </div>
                 <div class="form-field">
                   <label class="form-label">Price <span class="opt">(optional)</span></label>
-                  <input type="text" class="form-input" placeholder="₹ 0.00">
+                  <input type="text" id="add-price" class="form-input" placeholder="₹ 0.00">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Stock Quantity</label>
+                  <input type="number" id="add-stock" class="form-input" min="0" value="0">
                 </div>
                 <div class="form-field">
                   <label class="form-label">WhatsApp Number</label>
@@ -330,10 +342,17 @@
                   <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
                     <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
                     <div class="upload-title">Drag & drop images here</div>
-                    <div class="upload-sub">or <b>click to browse</b> · JPG, PNG up to 5MB</div>
+                    <div class="upload-sub">or <b>click to browse</b> Â· JPG, PNG up to 5MB</div>
                   </div>
                   <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
                   <div class="upload-preview" id="uploadPreview"></div>
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Merchandising</label>
+                  <div style="display:flex;gap:18px;flex-wrap:wrap">
+                    <label><input type="checkbox" id="add-featured"> Featured</label>
+                    <label><input type="checkbox" id="add-new-arrival"> New arrival</label>
+                  </div>
                 </div>
                 <div class="form-field full">
                   <label class="form-label">Status</label>
@@ -389,6 +408,14 @@
                   <input type="text" class="form-input" id="edit-name" value="Celestial Diamond Ring" required>
                 </div>
                 <div class="form-field">
+                  <label class="form-label">URL Slug</label>
+                  <input type="text" class="form-input" id="edit-slug" value="celestial-diamond-ring">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">SKU</label>
+                  <input type="text" class="form-input" id="edit-sku">
+                </div>
+                <div class="form-field">
                   <label class="form-label">Category</label>
                   <select class="form-select" id="edit-category" required>
                     <option>Rings</option>
@@ -401,11 +428,15 @@
                 </div>
                 <div class="form-field full">
                   <label class="form-label">Description</label>
-                  <textarea class="form-textarea" id="edit-desc">A brilliant solitaire set in 18k white gold with a halo of micro-pavé diamonds.</textarea>
+                  <textarea class="form-textarea" id="edit-desc">A brilliant solitaire set in 18k white gold with a halo of micro-pavÃ© diamonds.</textarea>
                 </div>
                 <div class="form-field">
                   <label class="form-label">Price <span class="opt">(optional)</span></label>
                   <input type="text" class="form-input" id="edit-price" value="₹1,85,000">
+                </div>
+                <div class="form-field">
+                  <label class="form-label">Stock Quantity</label>
+                  <input type="number" class="form-input" id="edit-stock" min="0" value="0">
                 </div>
                 <div class="form-field">
                   <label class="form-label">WhatsApp Number</label>
@@ -424,6 +455,13 @@
                   </div>
                   <input type="file" id="editFileInput" multiple accept="image/*" style="display:none" onchange="handleEditFiles(this.files)">
                   <div class="upload-preview" id="editPreview"></div>
+                </div>
+                <div class="form-field full">
+                  <label class="form-label">Merchandising</label>
+                  <div style="display:flex;gap:18px;flex-wrap:wrap">
+                    <label><input type="checkbox" id="edit-featured"> Featured</label>
+                    <label><input type="checkbox" id="edit-new-arrival"> New arrival</label>
+                  </div>
                 </div>
                 <div class="form-field full">
                   <label class="form-label">Status</label>
@@ -534,7 +572,7 @@
                 <div class="logo-preview"></div>
                 <div class="logo-info">
                   <h4>Ciyora Jewels Logo</h4>
-                  <p>PNG, JPG up to 2MB · Recommended 512×512</p>
+                  <p>PNG, JPG up to 2MB Â· Recommended 512Ã—512</p>
                   <div class="logo-btns">
                     <button type="button" class="btn btn-secondary btn-sm">Upload new</button>
                     <button type="button" class="btn btn-ghost btn-sm">Remove</button>
@@ -649,8 +687,8 @@
 <!-- Toast container -->
 <div class="toast-container" id="toastContainer"></div>
 
-<script src="assets/js/catalog.js?v=2"></script>
-<script src="assets/js/admin.js?v=2"></script>
+<script src="/assets/js/catalog.js?v=4"></script>
+<script src="/assets/js/admin.js?v=3"></script>
 </body>
 </html>
 
