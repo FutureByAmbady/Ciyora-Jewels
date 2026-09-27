@@ -4,7 +4,7 @@
   const slugify = value => String(value || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
   const grid = document.getElementById('productsGrid');
   const routeView = () => { let el=document.getElementById('routeView'); if(!el){el=document.createElement('section');el.id='routeView';el.className='container'; const anchor=document.getElementById('new'); anchor?.parentNode.insertBefore(el,anchor); } return el; };
-  const waNumber = () => String(catalogSettings.whatsapp || '').replace(/\D/g,'');
+  const waNumber = () => { const digits=String(catalogSettings.whatsapp || '').replace(/\D/g,''); if(!digits) return ''; return digits.startsWith('91') ? digits : digits.length===10 ? `91${digits}` : digits; };
   const instagramUrl = () => { const value=String(catalogSettings.instagram || '').trim(); if(!value) return ''; return /^https?:\/\//i.test(value) ? value : `https://instagram.com/${value.replace(/^@/,'')}`; };
   const waLink = p => { const number=waNumber(); if(!number) return '#'; const message=`Hello, I would like to enquire about this product.\n\nProduct: ${p.name}\nSKU: ${p.sku || 'Not specified'}\nPrice: ${p.price}\nProduct link: ${location.origin}/product/${p.slug || slugify(p.name)}\n\nThank you.`; return `https://wa.me/${number}?text=${encodeURIComponent(message)}`; };
   function applyBusinessSettings(){
