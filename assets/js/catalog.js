@@ -23,7 +23,7 @@
     if(!response.ok) throw new ApiError(body?.error || `Request failed (${response.status})`, response.status, body?.code || 'request_failed');
     return body;
   }
-  const demoCatalog = () => ({products:copy(seedProducts),categories:copy(seedCategories),settings:{businessName:'Ciyora Jewels',email:'hello@ciyorajewels.com',instagram:'https://instagram.com/ciyorajewels',whatsapp:'7012812320'}});
+  const demoCatalog = () => ({products:copy(seedProducts),categories:copy(seedCategories),settings:{businessName:'Ciyora Jewels',email:'',instagram:'https://instagram.com/ciyorajewels',whatsapp:'7012812320'}});
   async function getPublicCatalog(){
     try { return normalizeCatalog(await request('/catalog')); }
     catch(error){
