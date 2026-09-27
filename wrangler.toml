@@ -1,4 +1,4 @@
-name = "ciyora-jewels"
+﻿name = "ciyora-jewels"
 compatibility_date = "2026-09-24"
 pages_build_output_dir = "."
 
@@ -10,5 +10,4 @@ migrations_dir = "migrations"
 
 [vars]
 ENVIRONMENT = "production"
-# Production D1 binding verified
-# Pages rebuild after GitHub access repair
+
