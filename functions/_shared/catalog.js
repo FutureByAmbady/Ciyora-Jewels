@@ -2,6 +2,7 @@ const MAX_TEXT = 5000;
 const MAX_IMAGE_URL = 2_000_000;
 
 const text = (value, fallback = '') => String(value ?? fallback).trim().slice(0, MAX_TEXT);
+const imageValue = value => String(value ?? '').trim().slice(0, MAX_IMAGE_URL);
 const slugify = value => text(value).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 160);
 const safeJson = (value, fallback) => {
   try { return JSON.parse(value || ''); } catch { return fallback; }
@@ -83,7 +84,7 @@ export function normalizeProductInput(input, { requireId = false } = {}) {
   if (!input || typeof input !== 'object') throw Object.assign(new Error('Product data is required.'), { status: 400, code: 'invalid_product' });
   const id = Number(input.id);
   if (requireId && (!Number.isInteger(id) || id <= 0)) throw Object.assign(new Error('A valid product id is required.'), { status: 400, code: 'invalid_product_id' });
-  const images = (Array.isArray(input.imgs) ? input.imgs : (input.img ? [input.img] : [])).map(item => text(item, '').slice(0, MAX_IMAGE_URL)).filter(Boolean).slice(0, 10);
+  const images = (Array.isArray(input.imgs) ? input.imgs : (input.img ? [input.img] : [])).map(imageValue).filter(Boolean).slice(0, 10);
   const category = text(input.cat || input.category, 'Uncategorized').slice(0, 120);
   const name = text(input.name).slice(0, 180);
   if (!name || !category) throw Object.assign(new Error('Product name and category are required.'), { status: 400, code: 'invalid_product' });
@@ -99,7 +100,7 @@ export function normalizeProductInput(input, { requireId = false } = {}) {
     stockStatus: stockQuantity <= 0 ? 'out_of_stock' : stockQuantity < 5 ? 'low_stock' : 'in_stock',
     featured: input.featured === true || input.is_featured === 1 || input.badge === 'Featured' ? 1 : 0,
     newArrival: input.newArrival === true || input.is_new_arrival === 1 || input.badge === 'New' ? 1 : 0,
-    image: text(input.img || images[0]).slice(0, MAX_IMAGE_URL), images,
+    image: imageValue(input.img || images[0]), images,
     whatsapp: text(input.whatsapp).slice(0, 80), instagram: text(input.instagram).slice(0, 500),
     careInstructions: text(input.careInstructions || input.care_instructions).slice(0, 2000), shippingInformation: text(input.shippingInformation || input.shipping_information).slice(0, 2000), returnInformation: text(input.returnInformation || input.return_information).slice(0, 2000),
   };
@@ -109,7 +110,7 @@ export function normalizeCategoryInput(input, { requireId = false } = {}) {
   if (!input || typeof input !== 'object') throw Object.assign(new Error('Category data is required.'), { status: 400, code: 'invalid_category' });
   const id = Number(input.id); if (requireId && (!Number.isInteger(id) || id <= 0)) throw Object.assign(new Error('A valid category id is required.'), { status: 400, code: 'invalid_category_id' });
   const name = text(input.name).slice(0, 120); if (!name) throw Object.assign(new Error('Category name is required.'), { status: 400, code: 'invalid_category' });
-  return { id: Number.isInteger(id) && id > 0 ? id : null, name, slug: slugify(input.slug || name), description: text(input.description).slice(0, 1000), image: text(input.image).slice(0, MAX_IMAGE_URL), icon: text(input.icon, 'folder').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40) || 'folder', displayOrder: Math.max(0, Math.floor(Number(input.displayOrder ?? input.display_order ?? 0) || 0)), active: input.active === false || input.is_active === 0 ? 0 : 1, featured: input.featured === true || input.is_featured === 1 ? 1 : 0 };
+  return { id: Number.isInteger(id) && id > 0 ? id : null, name, slug: slugify(input.slug || name), description: text(input.description).slice(0, 1000), image: imageValue(input.image), icon: text(input.icon, 'folder').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40) || 'folder', displayOrder: Math.max(0, Math.floor(Number(input.displayOrder ?? input.display_order ?? 0) || 0)), active: input.active === false || input.is_active === 0 ? 0 : 1, featured: input.featured === true || input.is_featured === 1 ? 1 : 0 };
 }
 
 export async function readCatalog(db, { includeHidden = false, query = {} } = {}) {
