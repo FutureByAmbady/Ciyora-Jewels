@@ -56,7 +56,7 @@ export function normalizeWhatsapp(value) {
 }
 
 export function recordActivity(db, { eventType, message, productId = null, categoryId = null }) {
-  return db.prepare('INSERT INTO activity_events (event_type, message, product_id, category_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(String(eventType).slice(0, 80), String(message).slice(0, 500), productId, categoryId).run();
+  return db.prepare('INSERT INTO activity_events (event_type, message, product_id, category_id) VALUES (?,?,?,?)').bind(String(eventType).slice(0, 80), String(message).slice(0, 500), productId, categoryId).run();
 }
 
 export function recordAnalytics(db, { eventType, productId = null, category = '', searchTerm = '' }) {
@@ -138,7 +138,7 @@ export async function readCatalog(db, { includeHidden = false, query = {} } = {}
 export function productStatements(db, product, { update = false } = {}) {
   const fields = [product.name, product.slug, product.sku, product.category, product.description, product.shortDescription, product.price, product.compareAtPrice, product.priceAmount, product.material, product.stone, product.dimensions, product.color, product.weight, JSON.stringify(product.sizes), product.badge, product.status, product.image, JSON.stringify(product.images), product.whatsapp, product.instagram, product.stockQuantity, product.stockStatus, product.active, product.featured, product.newArrival, product.careInstructions, product.shippingInformation, product.returnInformation];
   if (update) return db.prepare(`UPDATE products SET name=?, slug=?, sku=?, category=?, description=?, short_description=?, price=?, compare_at_price=?, price_amount=?, material=?, stone=?, dimensions=?, color=?, weight=?, sizes_json=?, badge=?, status=?, image=?, images_json=?, whatsapp=?, instagram=?, stock_quantity=?, stock_status=?, is_active=?, is_featured=?, is_new_arrival=?, care_instructions=?, shipping_information=?, return_information=?, updated_at=datetime('now') WHERE id=?`).bind(...fields, product.id);
-  return db.prepare(`INSERT INTO products (name,slug,sku,category,description,short_description,price,compare_at_price,price_amount,material,stone,dimensions,color,weight,sizes_json,badge,status,image,images_json,whatsapp,instagram,stock_quantity,stock_status,is_active,is_featured,is_new_arrival,care_instructions,shipping_information,return_information) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(...fields);
+  return db.prepare(`INSERT INTO products (name,slug,sku,category,description,short_description,price,compare_at_price,price_amount,material,stone,dimensions,color,weight,sizes_json,badge,status,image,images_json,whatsapp,instagram,stock_quantity,stock_status,is_active,is_featured,is_new_arrival,care_instructions,shipping_information,return_information) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(...fields);
 }
 
 export function categoryStatements(db, category, { update = false } = {}) {
