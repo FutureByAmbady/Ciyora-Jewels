@@ -8,11 +8,18 @@ async function assertUniqueSku(db, sku, id = null) {
   if (row) throw Object.assign(new Error(`SKU is already used by ${row.name}.`), { status: 409, code: 'duplicate_sku' });
 }
 
+async function assertUniqueSlug(db, slug, id = null) {
+  if (!slug) return;
+  const row = id ? await db.prepare('SELECT id, name FROM products WHERE lower(slug) = lower(?) AND id != ? LIMIT 1').bind(slug, id).first() : await db.prepare('SELECT id, name FROM products WHERE lower(slug) = lower(?) LIMIT 1').bind(slug).first();
+  if (row) throw Object.assign(new Error(`Slug is already used by ${row.name}. Choose a different URL slug.`), { status: 409, code: 'duplicate_slug' });
+}
+
 export async function onRequestPost({ request, env }) {
   try {
     await requireAuth(request, env, { mutate: true });
     const product = normalizeProductInput(await readJson(request));
     await assertUniqueSku(env.DB, product.sku);
+    await assertUniqueSlug(env.DB, product.slug);
     const result = await productStatements(env.DB, product).run();
     const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(result.meta.last_row_id).first();
     await recordActivity(env.DB, { eventType: 'product_created', message: `Product created: ${product.name}`, productId: Number(result.meta.last_row_id) });
@@ -27,6 +34,7 @@ export async function onRequestPut({ request, env }) {
     await requireAuth(request, env, { mutate: true });
     const product = normalizeProductInput(await readJson(request), { requireId: true });
     await assertUniqueSku(env.DB, product.sku, product.id);
+    await assertUniqueSlug(env.DB, product.slug, product.id);
     const result = await productStatements(env.DB, product, { update: true }).run();
     if (!result.meta.changes) return error('Product was not found.', 404, 'not_found');
     const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(product.id).first();
