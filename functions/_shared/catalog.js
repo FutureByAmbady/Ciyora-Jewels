@@ -33,7 +33,45 @@ export function categoryFromRow(row) {
 }
 
 export function settingsFromRow(row) {
-  return { businessName: row?.business_name || 'Ciyora Jewels', email: row?.email || '', instagram: row?.instagram || '', whatsapp: row?.whatsapp || '' };
+  return {
+    businessName: row?.business_name || 'Ciyora Jewels',
+    email: row?.email || '',
+    instagram: row?.instagram || '',
+    whatsapp: row?.whatsapp || '',
+    logo: row?.logo_url || '',
+    favicon: row?.favicon_url || '',
+  };
+}
+
+export function normalizeWhatsapp(value) {
+  let digits = String(value ?? '').replace(/\D/g, '');
+  while (digits.startsWith('9191') && digits.length > 12) digits = digits.slice(2);
+  if (digits.length === 10) digits = `91${digits}`;
+  return digits.slice(0, 20);
+}
+
+export function recordActivity(db, { eventType, message, productId = null, categoryId = null }) {
+  return db.prepare('INSERT INTO activity_events (event_type, message, product_id, category_id) VALUES (?, ?, ?, ?)').bind(String(eventType).slice(0, 80), String(message).slice(0, 500), productId, categoryId).run();
+}
+
+export function recordAnalytics(db, { eventType, productId = null, category = '', searchTerm = '' }) {
+  return db.prepare('INSERT INTO analytics_events (event_type, product_id, category, search_term) VALUES (?, ?, ?, ?)').bind(eventType, productId, String(category || '').slice(0, 120), String(searchTerm || '').slice(0, 120)).run();
+}
+
+export function reviewFromRow(row) {
+  return { id: Number(row.id), productId: Number(row.product_id), productName: row.product_name || '', name: row.name, rating: Number(row.rating), review: row.review, status: row.status, createdAt: row.created_at };
+}
+
+export function normalizeReviewInput(input) {
+  const productId = Number(input?.productId ?? input?.product_id);
+  const name = text(input?.name).slice(0, 80);
+  const review = text(input?.review).slice(0, 1500);
+  const rating = Math.floor(Number(input?.rating));
+  if (!Number.isInteger(productId) || productId <= 0) throw Object.assign(new Error('A valid product is required.'), { status: 400, code: 'invalid_product_id' });
+  if (!name || name.length < 2) throw Object.assign(new Error('Please enter your name.'), { status: 400, code: 'invalid_review_name' });
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) throw Object.assign(new Error('Rating must be between 1 and 5.'), { status: 400, code: 'invalid_rating' });
+  if (!review || review.length < 10) throw Object.assign(new Error('Review must be at least 10 characters.'), { status: 400, code: 'invalid_review' });
+  return { productId, name, rating, review };
 }
 
 export function normalizeProductInput(input, { requireId = false } = {}) {
