@@ -22,7 +22,7 @@ export function productFromRow(row) {
   return {
     id: Number(row.id), name: row.name, slug: row.slug || slugify(row.name), sku: row.sku || '',
     cat: row.category, desc: row.description || '', shortDescription: row.short_description || row.description || '',
-    price: formatInr(row.price_amount || row.price), compareAtPrice: formatInr(row.compare_at_price || ''), priceAmount: Number(row.price_amount || numericPrice(row.price)),
+    price: formatInr(row.price_amount || row.price), compareAtPrice: row.compare_at_price ? formatInr(row.compare_at_price) : '', priceAmount: Number(row.price_amount || numericPrice(row.price)),
     material: row.material || 'Not specified', stone: row.stone || '', dimensions: row.dimensions || '', color: row.color || 'Not specified', weight: row.weight || 'Not specified',
     sizes, badge: row.badge || '', status: row.status === 'hidden' ? 'hidden' : 'published', active: Number(row.is_active ?? 1) === 1,
     stockQuantity: Number(row.stock_quantity || 0), stockStatus: row.stock_status || (Number(row.stock_quantity || 0) > 0 ? 'in_stock' : 'out_of_stock'),
@@ -92,7 +92,7 @@ export function normalizeProductInput(input, { requireId = false } = {}) {
   return {
     id: Number.isInteger(id) && id > 0 ? id : null, name, slug: slugify(input.slug || name), sku: text(input.sku).slice(0, 80), category,
     description: text(input.desc || input.description).slice(0, 2000), shortDescription: text(input.shortDescription || input.short_description || input.desc || input.description).slice(0, 500),
-    price: formatInr(input.priceAmount ?? input.price), compareAtPrice: formatInr(input.compareAtPrice || input.compare_at_price), priceAmount: numericPrice(input.priceAmount ?? input.price),
+    price: formatInr(input.priceAmount ?? input.price), compareAtPrice: (input.compareAtPrice || input.compare_at_price) ? formatInr(input.compareAtPrice || input.compare_at_price) : '', priceAmount: numericPrice(input.priceAmount ?? input.price),
     material: text(input.material, 'Not specified').slice(0, 180), stone: text(input.stone).slice(0, 180), dimensions: text(input.dimensions).slice(0, 180), color: text(input.color, 'Not specified').slice(0, 80), weight: text(input.weight, 'Not specified').slice(0, 80),
     sizes: (Array.isArray(input.sizes) ? input.sizes : ['One Size']).map(item => text(item).slice(0, 40)).filter(Boolean).slice(0, 20), badge: text(input.badge).slice(0, 40),
     status: requestedStatus, active: input.active === false || input.is_active === 0 ? 0 : 1, stockQuantity,
