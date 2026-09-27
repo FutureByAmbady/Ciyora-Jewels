@@ -25,12 +25,14 @@
     const box=document.querySelector('.categories-grid'); if(!box) return;
     box.innerHTML=categories.filter(c=>c.active!==false).map(c=>`<div class="cat-card reveal" onclick="filterCategory('${escapeHtml(c.slug)}')"><img src="${escapeHtml(c.image || image(products.find(p=>slugify(p.cat)===c.slug) || {}))}" alt="${escapeHtml(c.name)}" loading="lazy"><div class="cat-overlay"><div class="arrow"><i data-lucide="arrow-up-right"></i></div><span>${Number(c.count||0)} Pieces</span><h3>${escapeHtml(c.name)}</h3></div></div>`).join('');
     if(window.lucide) lucide.createIcons();
+    if(typeof observeReveals === 'function') observeReveals();
   }
 
   function renderProducts(list=products,target=grid){
     if(!target) return;
     target.innerHTML=list.map(p=>{const isFav=favs().includes(Number(p.id));const sold=Number(p.stockQuantity||0)===0 && p.stockStatus==='out_of_stock';return `<div class="product-card reveal" onclick="openProduct('${escapeHtml(p.slug || slugify(p.name))}')"><div class="product-img">${p.badge?`<span class="product-badge">${escapeHtml(p.badge)}</span>`:''}${sold?'<span class="product-badge" style="left:auto;right:12px;background:#222">SOLD OUT</span>':''}<button class="product-fav ${isFav?'active':''}" onclick="event.stopPropagation();toggleFav(this,${Number(p.id)})" aria-label="Favorite"><i data-lucide="heart"></i></button><img src="${escapeHtml(image(p))}" alt="${escapeHtml(p.name)}" loading="lazy"></div><div class="product-info"><div class="product-cat">${escapeHtml(p.cat)}</div><h3>${escapeHtml(p.name)}</h3><p class="desc">${escapeHtml((p.shortDescription||p.desc||'').slice(0,80))}${(p.desc||'').length>80?'...':''}</p><div class="product-bottom"><div class="product-price">${escapeHtml(p.price)}</div><div class="product-actions"><a href="${escapeHtml(instagramUrl()||'#')}" target="_blank" class="icon-btn" onclick="event.stopPropagation()" aria-label="Instagram"><i data-lucide="instagram"></i></a><a href="${escapeHtml(waLink(p))}" target="_blank" class="icon-btn" onclick="event.stopPropagation()" aria-label="WhatsApp"><i data-lucide="message-circle"></i></a></div></div></div></div>`}).join('') || '<div class="empty-state">No products are available here yet.</div>';
     if(window.lucide) lucide.createIcons();
+    if(typeof observeReveals === 'function') observeReveals();
   }
 
   function renderProduct(p){
