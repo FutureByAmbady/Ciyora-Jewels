@@ -18,7 +18,7 @@ export function productFromRow(row) {
     id: Number(row.id), name: row.name, slug: row.slug || slugify(row.name), sku: row.sku || '',
     cat: row.category, desc: row.description || '', shortDescription: row.short_description || row.description || '',
     price: row.price || 'Price on request', compareAtPrice: row.compare_at_price || '', priceAmount: Number(row.price_amount || numericPrice(row.price)),
-    material: row.material || 'Not specified', color: row.color || 'Not specified', weight: row.weight || 'Not specified',
+    material: row.material || 'Not specified', stone: row.stone || '', dimensions: row.dimensions || '', color: row.color || 'Not specified', weight: row.weight || 'Not specified',
     sizes, badge: row.badge || '', status: row.status === 'hidden' ? 'hidden' : 'published', active: Number(row.is_active ?? 1) === 1,
     stockQuantity: Number(row.stock_quantity || 0), stockStatus: row.stock_status || (Number(row.stock_quantity || 0) > 0 ? 'in_stock' : 'out_of_stock'),
     featured: Number(row.is_featured || 0) === 1, newArrival: Number(row.is_new_arrival || 0) === 1,
@@ -50,7 +50,7 @@ export function normalizeProductInput(input, { requireId = false } = {}) {
     id: Number.isInteger(id) && id > 0 ? id : null, name, slug: slugify(input.slug || name), sku: text(input.sku).slice(0, 80), category,
     description: text(input.desc || input.description).slice(0, 2000), shortDescription: text(input.shortDescription || input.short_description || input.desc || input.description).slice(0, 500),
     price: text(input.price, 'Price on request').slice(0, 80), compareAtPrice: text(input.compareAtPrice || input.compare_at_price).slice(0, 80), priceAmount: numericPrice(input.priceAmount ?? input.price),
-    material: text(input.material, 'Not specified').slice(0, 180), color: text(input.color, 'Not specified').slice(0, 80), weight: text(input.weight, 'Not specified').slice(0, 80),
+    material: text(input.material, 'Not specified').slice(0, 180), stone: text(input.stone).slice(0, 180), dimensions: text(input.dimensions).slice(0, 180), color: text(input.color, 'Not specified').slice(0, 80), weight: text(input.weight, 'Not specified').slice(0, 80),
     sizes: (Array.isArray(input.sizes) ? input.sizes : ['One Size']).map(item => text(item).slice(0, 40)).filter(Boolean).slice(0, 20), badge: text(input.badge).slice(0, 40),
     status: requestedStatus, active: input.active === false || input.is_active === 0 ? 0 : 1, stockQuantity,
     stockStatus: stockQuantity <= 0 ? 'out_of_stock' : stockQuantity < 5 ? 'low_stock' : 'in_stock',
@@ -93,9 +93,9 @@ export async function readCatalog(db, { includeHidden = false, query = {} } = {}
 }
 
 export function productStatements(db, product, { update = false } = {}) {
-  const fields = [product.name, product.slug, product.sku, product.category, product.description, product.shortDescription, product.price, product.compareAtPrice, product.priceAmount, product.material, product.color, product.weight, JSON.stringify(product.sizes), product.badge, product.status, product.image, JSON.stringify(product.images), product.whatsapp, product.instagram, product.stockQuantity, product.stockStatus, product.active, product.featured, product.newArrival, product.careInstructions, product.shippingInformation, product.returnInformation];
-  if (update) return db.prepare(`UPDATE products SET name=?, slug=?, sku=?, category=?, description=?, short_description=?, price=?, compare_at_price=?, price_amount=?, material=?, color=?, weight=?, sizes_json=?, badge=?, status=?, image=?, images_json=?, whatsapp=?, instagram=?, stock_quantity=?, stock_status=?, is_active=?, is_featured=?, is_new_arrival=?, care_instructions=?, shipping_information=?, return_information=?, updated_at=datetime('now') WHERE id=?`).bind(...fields, product.id);
-  return db.prepare(`INSERT INTO products (name,slug,sku,category,description,short_description,price,compare_at_price,price_amount,material,color,weight,sizes_json,badge,status,image,images_json,whatsapp,instagram,stock_quantity,stock_status,is_active,is_featured,is_new_arrival,care_instructions,shipping_information,return_information) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(...fields);
+  const fields = [product.name, product.slug, product.sku, product.category, product.description, product.shortDescription, product.price, product.compareAtPrice, product.priceAmount, product.material, product.stone, product.dimensions, product.color, product.weight, JSON.stringify(product.sizes), product.badge, product.status, product.image, JSON.stringify(product.images), product.whatsapp, product.instagram, product.stockQuantity, product.stockStatus, product.active, product.featured, product.newArrival, product.careInstructions, product.shippingInformation, product.returnInformation];
+  if (update) return db.prepare(`UPDATE products SET name=?, slug=?, sku=?, category=?, description=?, short_description=?, price=?, compare_at_price=?, price_amount=?, material=?, stone=?, dimensions=?, color=?, weight=?, sizes_json=?, badge=?, status=?, image=?, images_json=?, whatsapp=?, instagram=?, stock_quantity=?, stock_status=?, is_active=?, is_featured=?, is_new_arrival=?, care_instructions=?, shipping_information=?, return_information=?, updated_at=datetime('now') WHERE id=?`).bind(...fields, product.id);
+  return db.prepare(`INSERT INTO products (name,slug,sku,category,description,short_description,price,compare_at_price,price_amount,material,stone,dimensions,color,weight,sizes_json,badge,status,image,images_json,whatsapp,instagram,stock_quantity,stock_status,is_active,is_featured,is_new_arrival,care_instructions,shipping_information,return_information) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`).bind(...fields);
 }
 
 export function categoryStatements(db, category, { update = false } = {}) {
