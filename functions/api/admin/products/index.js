@@ -1,5 +1,5 @@
 import { requireAuth } from '../../../_shared/auth.js';
-import { normalizeProductInput, productFromRow, productStatements } from '../../../_shared/catalog.js';
+import { normalizeProductInput, productFromRow, productStatements, recordActivity } from '../../../_shared/catalog.js';
 import { json, error, handleError, readJson } from '../../../_shared/http.js';
 
 async function assertUniqueSku(db, sku, id = null) {
@@ -15,6 +15,7 @@ export async function onRequestPost({ request, env }) {
     await assertUniqueSku(env.DB, product.sku);
     const result = await productStatements(env.DB, product).run();
     const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(result.meta.last_row_id).first();
+    await recordActivity(env.DB, { eventType: 'product_created', message: `Product created: ${product.name}`, productId: Number(result.meta.last_row_id) });
     return json({ product: productFromRow(row) }, 201);
   } catch (err) {
     return handleError(err);
@@ -29,6 +30,7 @@ export async function onRequestPut({ request, env }) {
     const result = await productStatements(env.DB, product, { update: true }).run();
     if (!result.meta.changes) return error('Product was not found.', 404, 'not_found');
     const row = await env.DB.prepare('SELECT * FROM products WHERE id = ?').bind(product.id).first();
+    await recordActivity(env.DB, { eventType: product.status === 'hidden' ? 'product_hidden' : 'product_updated', message: `${product.status === 'hidden' ? 'Product hidden' : 'Product updated'}: ${product.name}`, productId: product.id });
     return json({ product: productFromRow(row) });
   } catch (err) {
     return handleError(err);
@@ -41,8 +43,10 @@ export async function onRequestDelete({ request, env }) {
     const url = new URL(request.url);
     const id = Number(url.searchParams.get('id'));
     if (!Number.isInteger(id) || id <= 0) return error('A valid product id is required.', 400, 'invalid_product_id');
+    const existing = await env.DB.prepare('SELECT name FROM products WHERE id = ?').bind(id).first();
     const result = await env.DB.prepare('DELETE FROM products WHERE id = ?').bind(id).run();
     if (!result.meta.changes) return error('Product was not found.', 404, 'not_found');
+    await recordActivity(env.DB, { eventType: 'product_deleted', message: `Product deleted: ${existing?.name || id}`, productId: id });
     return json({ ok: true });
   } catch (err) {
     return handleError(err);
