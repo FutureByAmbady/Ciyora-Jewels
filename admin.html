@@ -131,7 +131,7 @@
               <span class="stat-label">Total Products</span>
               <div class="stat-icon"><i data-lucide="gem"></i></div>
             </div>
-            <div class="stat-value" id="stat-total">8</div>
+            <div class="stat-value" id="stat-total">0</div>
             <div class="stat-change" style="color:var(--muted)">Live D1 catalogue</div>
           </div>
           <div class="stat-card">
@@ -139,7 +139,7 @@
               <span class="stat-label">Published</span>
               <div class="stat-icon" style="background:var(--success-bg);color:var(--success)"><i data-lucide="check-circle"></i></div>
             </div>
-            <div class="stat-value" id="stat-published">6</div>
+            <div class="stat-value" id="stat-published">0</div>
             <div class="stat-change"><i data-lucide="trending-up" style="width:12px;height:12px"></i> Visible on catalog</div>
           </div>
           <div class="stat-card">
@@ -147,7 +147,7 @@
               <span class="stat-label">Hidden</span>
               <div class="stat-icon" style="background:var(--line-soft);color:var(--muted)"><i data-lucide="eye-off"></i></div>
             </div>
-            <div class="stat-value" id="stat-hidden">2</div>
+            <div class="stat-value" id="stat-hidden">0</div>
             <div class="stat-change" style="color:var(--muted)">Not visible</div>
           </div>
           <div class="stat-card">
@@ -155,7 +155,7 @@
               <span class="stat-label">Categories</span>
               <div class="stat-icon"><i data-lucide="folder"></i></div>
             </div>
-            <div class="stat-value" id="stat-categories">6</div>
+            <div class="stat-value" id="stat-categories">0</div>
             <div class="stat-change" style="color:var(--muted)">All organized</div>
           </div>
         </div>
@@ -230,7 +230,7 @@
           <div class="card-head">
             <div>
               <div class="card-title">All Products</div>
-              <div class="card-sub" id="productsCount">8 items</div>
+              <div class="card-sub" id="productsCount">0 items</div>
             </div>
             <div class="catalog-toolbar">
               <div class="topbar-search" style="max-width:220px;margin-left:0">
@@ -277,224 +277,10 @@
       </section>
 
       <!-- ====== ADD PRODUCT ====== -->
-      <section class="page" id="page-add">
-        <div class="page-head">
-          <div>
-            <h1>Add New Product</h1>
-            <p>Fill in the details to list a new jewelry piece</p>
-          </div>
-          <button class="btn btn-secondary" onclick="goTo('products')">
-            <i data-lucide="arrow-left"></i> Back
-          </button>
-        </div>
-
-        <div class="card form-card">
-          <div class="card-body">
-            <form onsubmit="handleSaveProduct(event)">
-              <div class="form-grid">
-                <div class="form-field">
-                  <label class="form-label">Product Name</label>
-                  <input type="text" id="add-name" class="form-input" placeholder="e.g. Celestial Diamond Ring" required>
-                </div>
-                <div class="form-field">
-                  <label class="form-label">URL Slug <span class="opt">(optional)</span></label>
-                  <input type="text" id="add-slug" class="form-input" placeholder="celestial-diamond-ring">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">SKU <span class="opt">(optional)</span></label>
-                  <input type="text" id="add-sku" class="form-input" placeholder="CJ-RING-001">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Category</label>
-                  <select class="form-select" required>
-                    <option value="">Select category</option>
-                    <option>Rings</option>
-                    <option>Necklaces</option>
-                    <option>Bracelets</option>
-                    <option>Earrings</option>
-                    <option>Bridal</option>
-                    <option>Temple Jewelry</option>
-                  </select>
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Description</label>
-                  <textarea class="form-textarea" placeholder="Describe your jewelry piece..."></textarea>
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Price <span class="opt">(optional)</span></label>
-                  <input type="text" id="add-price" class="form-input" placeholder="₹ 0.00">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Stock Quantity</label>
-                  <input type="number" id="add-stock" class="form-input" min="0" value="0">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">WhatsApp Number</label>
-                  <input type="text" class="form-input" placeholder="Enter WhatsApp number">
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Instagram Post Link</label>
-                  <input type="url" class="form-input" placeholder="Paste Instagram post URL...">
-                  <div class="form-hint">Link to the Instagram post featuring this product</div>
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Product Images</label>
-                  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                    <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
-                    <div class="upload-title">Drag & drop images here</div>
-                    <div class="upload-sub">or <b>click to browse</b> Â· JPG, PNG up to 5MB</div>
-                  </div>
-                  <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)">
-                  <div class="upload-preview" id="uploadPreview"></div>
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Merchandising</label>
-                  <div style="display:flex;gap:18px;flex-wrap:wrap">
-                    <label><input type="checkbox" id="add-featured"> Featured</label>
-                    <label><input type="checkbox" id="add-new-arrival"> New arrival</label>
-                  </div>
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Status</label>
-                  <div class="status-group">
-                    <label class="status-opt active" onclick="selectStatus(this,'published')">
-                      <input type="radio" name="status" value="published" checked>
-                      <div class="status-radio"></div>
-                      <div>
-                        <div class="status-text">Published</div>
-                        <div class="status-desc">Visible in catalog</div>
-                      </div>
-                    </label>
-                    <label class="status-opt" onclick="selectStatus(this,'hidden')">
-                      <input type="radio" name="status" value="hidden">
-                      <div class="status-radio"></div>
-                      <div>
-                        <div class="status-text">Hidden</div>
-                        <div class="status-desc">Draft, not visible</div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="goTo('products')">Cancel</button>
-                <button type="submit" class="btn btn-primary btn-lg">
-                  <i data-lucide="save"></i> Save Product
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </section>
+      <section class="page" id="page-add"><div class="page-head"><div><h1>Add New Product</h1><p>Create a polished catalogue entry without inventing missing data.</p></div><button class="btn btn-secondary" onclick="goTo('products')"><i data-lucide="arrow-left"></i> Back</button></div><div class="card form-card"><div class="card-body"><form id="addForm" onsubmit="handleSaveProduct(event)"><div class="form-grid"><div class="form-section-title full">Basic Information</div><div class="form-field"><label class="form-label">Product Name</label><input type="text" id="add-name" class="form-input" placeholder="e.g. Celestial Diamond Ring" required></div><div class="form-field"><label class="form-label">SKU <span class="opt">(recommended)</span></label><input type="text" id="add-sku" class="form-input" placeholder="CJ-RING-001" autocomplete="off"><div class="field-help" id="add-sku-hint"></div></div><div class="form-field"><label class="form-label">URL Slug</label><input type="text" id="add-slug" class="form-input" placeholder="celestial-diamond-ring" required></div><div class="form-field"><label class="form-label">Category</label><select id="add-category" class="form-select" required><option value="">Select category</option></select></div><div class="form-field"><label class="form-label">Price</label><input type="text" id="add-price" class="form-input" placeholder="₹ 0.00" required></div><div class="form-field"><label class="form-label">Availability / Stock</label><input type="number" id="add-stock" class="form-input" min="0" value="0"><div class="field-help">0 displays as out of stock.</div></div><div class="form-section-title full">Product Details</div><div class="form-field full"><label class="form-label">Description</label><textarea id="add-desc" class="form-textarea" placeholder="Describe the craftsmanship, finish, and story..."></textarea></div><div class="form-field"><label class="form-label">Material <span class="opt">(optional)</span></label><input type="text" id="add-material" class="form-input" placeholder="18k Gold"></div><div class="form-field"><label class="form-label">Stone <span class="opt">(optional)</span></label><input type="text" id="add-stone" class="form-input" placeholder="Diamond"></div><div class="form-field"><label class="form-label">Dimensions <span class="opt">(optional)</span></label><input type="text" id="add-dimensions" class="form-input" placeholder="20 × 10 mm"></div><div class="form-field"><label class="form-label">Weight <span class="opt">(optional)</span></label><input type="text" id="add-weight" class="form-input" placeholder="4.2g"></div><div class="form-field"><label class="form-label">Colour <span class="opt">(optional)</span></label><input type="text" id="add-color" class="form-input" placeholder="Gold"></div><div class="form-section-title full">Visibility</div><div class="form-field full"><div class="toggle-grid"><label class="check-card"><input type="checkbox" id="add-featured"><span><strong>Featured</strong><small>Show in featured placements.</small></span></label><label class="check-card"><input type="checkbox" id="add-new-arrival"><span><strong>New Arrival</strong><small>Highlight as a recent addition.</small></span></label></div></div><div class="form-field full"><div class="status-group"><label class="status-opt active" onclick="selectStatus(this)"><input type="radio" name="add-status" value="published" checked><div class="status-radio"></div><div><div class="status-text">Published</div><div class="status-desc">Visible in catalogue</div></div></label><label class="status-opt" onclick="selectStatus(this)"><input type="radio" name="add-status" value="hidden"><div class="status-radio"></div><div><div class="status-text">Hidden</div><div class="status-desc">Draft, not visible to customers</div></div></label></div></div><div class="form-section-title full">Images</div><div class="form-field full"><div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()"><div class="upload-icon"><i data-lucide="upload-cloud"></i></div><div class="upload-title">Upload product images</div><div class="upload-sub">Drag and drop or <b>browse</b> · JPG, PNG up to 5MB</div></div><input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleFiles(this.files)"><div class="upload-status"></div><div class="upload-preview" id="uploadPreview"></div><div class="field-help">First image is primary. Use the controls to reorder, replace, or delete.</div></div></div><div class="form-warning" id="add-warnings">Complete the important fields before saving. Optional fields may remain blank.</div><div class="form-actions"><button type="button" class="btn btn-secondary" onclick="goTo('products')">Cancel</button><button type="button" class="btn btn-ghost" onclick="openProductPreview('add')"><i data-lucide="eye"></i> Preview Product</button><button type="submit" class="btn btn-primary btn-lg"><i data-lucide="save"></i> Save Product</button></div></form></div></div></section>
 
       <!-- ====== EDIT PRODUCT ====== -->
-      <section class="page" id="page-edit">
-        <div class="page-head">
-          <div>
-            <h1>Edit Product</h1>
-            <p>Update product details</p>
-          </div>
-          <button class="btn btn-secondary" onclick="goTo('products')">
-            <i data-lucide="arrow-left"></i> Back
-          </button>
-        </div>
-
-        <div class="card form-card">
-          <div class="card-body">
-            <form onsubmit="handleUpdateProduct(event)">
-              <div class="form-grid">
-                <div class="form-field">
-                  <label class="form-label">Product Name</label>
-                  <input type="text" class="form-input" id="edit-name" value="Celestial Diamond Ring" required>
-                </div>
-                <div class="form-field">
-                  <label class="form-label">URL Slug</label>
-                  <input type="text" class="form-input" id="edit-slug" value="celestial-diamond-ring">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">SKU</label>
-                  <input type="text" class="form-input" id="edit-sku">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Category</label>
-                  <select class="form-select" id="edit-category" required>
-                    <option>Rings</option>
-                    <option>Necklaces</option>
-                    <option>Bracelets</option>
-                    <option>Earrings</option>
-                    <option>Bridal</option>
-                    <option>Temple Jewelry</option>
-                  </select>
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Description</label>
-                  <textarea class="form-textarea" id="edit-desc">A brilliant solitaire set in 18k white gold with a halo of micro-pavÃ© diamonds.</textarea>
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Price <span class="opt">(optional)</span></label>
-                  <input type="text" class="form-input" id="edit-price" value="₹1,85,000">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">Stock Quantity</label>
-                  <input type="number" class="form-input" id="edit-stock" min="0" value="0">
-                </div>
-                <div class="form-field">
-                  <label class="form-label">WhatsApp Number</label>
-                  <input type="text" class="form-input" id="edit-wa" value="">
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Instagram Post Link</label>
-                  <input type="url" class="form-input" id="edit-ig" value="https://instagram.com/p/example">
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Product Images</label>
-                  <div class="upload-area" onclick="document.getElementById('editFileInput').click()">
-                    <div class="upload-icon"><i data-lucide="upload-cloud"></i></div>
-                    <div class="upload-title">Add more images</div>
-                    <div class="upload-sub">or <b>click to browse</b></div>
-                  </div>
-                  <input type="file" id="editFileInput" multiple accept="image/*" style="display:none" onchange="handleEditFiles(this.files)">
-                  <div class="upload-preview" id="editPreview"></div>
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Merchandising</label>
-                  <div style="display:flex;gap:18px;flex-wrap:wrap">
-                    <label><input type="checkbox" id="edit-featured"> Featured</label>
-                    <label><input type="checkbox" id="edit-new-arrival"> New arrival</label>
-                  </div>
-                </div>
-                <div class="form-field full">
-                  <label class="form-label">Status</label>
-                  <div class="status-group">
-                    <label class="status-opt active" onclick="selectStatus(this,'published')">
-                      <input type="radio" name="edit-status" value="published" checked>
-                      <div class="status-radio"></div>
-                      <div>
-                        <div class="status-text">Published</div>
-                        <div class="status-desc">Visible in catalog</div>
-                      </div>
-                    </label>
-                    <label class="status-opt" onclick="selectStatus(this,'hidden')">
-                      <input type="radio" name="edit-status" value="hidden">
-                      <div class="status-radio"></div>
-                      <div>
-                        <div class="status-text">Hidden</div>
-                        <div class="status-desc">Draft, not visible</div>
-                      </div>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="goTo('products')">Cancel</button>
-                <button type="submit" class="btn btn-dark btn-lg">
-                  <i data-lucide="check"></i> Update Product
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </section>
+      <section class="page" id="page-edit"><div class="page-head"><div><h1>Edit Product</h1><p>Update the catalogue entry and preview changes before publishing.</p></div><button class="btn btn-secondary" onclick="goTo('products')"><i data-lucide="arrow-left"></i> Back</button></div><div class="card form-card"><div class="card-body"><form id="editForm" onsubmit="handleUpdateProduct(event)"><div class="form-grid"><div class="form-section-title full">Basic Information</div><div class="form-field"><label class="form-label">Product Name</label><input type="text" id="edit-name" class="form-input" placeholder="e.g. Celestial Diamond Ring" required></div><div class="form-field"><label class="form-label">SKU <span class="opt">(recommended)</span></label><input type="text" id="edit-sku" class="form-input" placeholder="CJ-RING-001" autocomplete="off"><div class="field-help" id="edit-sku-hint"></div></div><div class="form-field"><label class="form-label">URL Slug</label><input type="text" id="edit-slug" class="form-input" placeholder="celestial-diamond-ring" required></div><div class="form-field"><label class="form-label">Category</label><select id="edit-category" class="form-select" required><option value="">Select category</option></select></div><div class="form-field"><label class="form-label">Price</label><input type="text" id="edit-price" class="form-input" placeholder="₹ 0.00" required></div><div class="form-field"><label class="form-label">Availability / Stock</label><input type="number" id="edit-stock" class="form-input" min="0" value="0"><div class="field-help">0 displays as out of stock.</div></div><div class="form-section-title full">Product Details</div><div class="form-field full"><label class="form-label">Description</label><textarea id="edit-desc" class="form-textarea" placeholder="Describe the craftsmanship, finish, and story..."></textarea></div><div class="form-field"><label class="form-label">Material <span class="opt">(optional)</span></label><input type="text" id="edit-material" class="form-input" placeholder="18k Gold"></div><div class="form-field"><label class="form-label">Stone <span class="opt">(optional)</span></label><input type="text" id="edit-stone" class="form-input" placeholder="Diamond"></div><div class="form-field"><label class="form-label">Dimensions <span class="opt">(optional)</span></label><input type="text" id="edit-dimensions" class="form-input" placeholder="20 × 10 mm"></div><div class="form-field"><label class="form-label">Weight <span class="opt">(optional)</span></label><input type="text" id="edit-weight" class="form-input" placeholder="4.2g"></div><div class="form-field"><label class="form-label">Colour <span class="opt">(optional)</span></label><input type="text" id="edit-color" class="form-input" placeholder="Gold"></div><div class="form-section-title full">Visibility</div><div class="form-field full"><div class="toggle-grid"><label class="check-card"><input type="checkbox" id="edit-featured"><span><strong>Featured</strong><small>Show in featured placements.</small></span></label><label class="check-card"><input type="checkbox" id="edit-new-arrival"><span><strong>New Arrival</strong><small>Highlight as a recent addition.</small></span></label></div></div><div class="form-field full"><div class="status-group"><label class="status-opt active" onclick="selectStatus(this)"><input type="radio" name="edit-status" value="published" checked><div class="status-radio"></div><div><div class="status-text">Published</div><div class="status-desc">Visible in catalogue</div></div></label><label class="status-opt" onclick="selectStatus(this)"><input type="radio" name="edit-status" value="hidden"><div class="status-radio"></div><div><div class="status-text">Hidden</div><div class="status-desc">Draft, not visible to customers</div></div></label></div></div><div class="form-section-title full">Images</div><div class="form-field full"><div class="upload-area" id="editUploadArea" onclick="document.getElementById('editFileInput').click()"><div class="upload-icon"><i data-lucide="upload-cloud"></i></div><div class="upload-title">Upload product images</div><div class="upload-sub">Drag and drop or <b>browse</b> · JPG, PNG up to 5MB</div></div><input type="file" id="editFileInput" multiple accept="image/*" style="display:none" onchange="handleEditFiles(this.files)"><div class="upload-status"></div><div class="upload-preview" id="editPreview"></div><div class="field-help">First image is primary. Use the controls to reorder, replace, or delete.</div></div></div><div class="form-warning" id="edit-warnings">Complete the important fields before saving. Optional fields may remain blank.</div><div class="form-actions"><button type="button" class="btn btn-secondary" onclick="goTo('products')">Cancel</button><button type="button" class="btn btn-ghost" onclick="openProductPreview('edit')"><i data-lucide="eye"></i> Preview Product</button><button type="button" class="btn btn-secondary" onclick="viewLiveProduct('edit')"><i data-lucide="external-link"></i> View Product</button><button type="submit" class="btn btn-primary btn-lg"><i data-lucide="check"></i> Update Product</button></div></form></div></div></section>
 
       <!-- ====== CATEGORIES ====== -->
       <section class="page" id="page-categories">
@@ -512,7 +298,7 @@
           <div class="card-head">
             <div>
               <div class="card-title">All Categories</div>
-              <div class="card-sub" id="categoriesCount">6 categories</div>
+              <div class="card-sub" id="categoriesCount">0 categories</div>
             </div>
           </div>
           <div class="cat-list" id="catList"></div>
@@ -629,27 +415,7 @@
 </div>
 
 <!-- Category Modal -->
-<div class="modal" id="categoryModal">
-  <div class="modal-box">
-    <div class="modal-icon" style="background:var(--gold-bg);color:var(--gold)"><i data-lucide="folder-plus"></i></div>
-    <div class="modal-title" id="categoryModalTitle">Add Category</div>
-    <div class="modal-text">Create a clear collection name so customers can browse your jewelry easily.</div>
-    <form onsubmit="saveCategory(event)">
-      <div class="form-field">
-        <label class="form-label" for="categoryNameInput">Category name</label>
-        <input class="form-input" id="categoryNameInput" type="text" placeholder="e.g. Gemstone Jewelry" maxlength="40" required>
-      </div>
-      <div class="form-field" style="margin-top:14px">
-        <label class="form-label" for="categoryIconInput">Icon name <span class="opt">(Lucide icon)</span></label>
-        <input class="form-input" id="categoryIconInput" type="text" placeholder="e.g. sparkles" maxlength="30" value="sparkles">
-      </div>
-      <div class="modal-actions" style="margin-top:22px">
-        <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
-        <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save Category</button>
-      </div>
-    </form>
-  </div>
-</div>
+<div class="modal" id="categoryModal"><div class="modal-box"><div class="modal-icon" style="background:var(--gold-bg);color:var(--gold)"><i data-lucide="folder-plus"></i></div><div class="modal-title" id="categoryModalTitle">Add Category</div><div class="modal-text">Keep collections organized without deleting unused categories.</div><form onsubmit="saveCategory(event)"><div class="form-field"><label class="form-label" for="categoryNameInput">Category name</label><input class="form-input" id="categoryNameInput" type="text" placeholder="e.g. Gemstone Jewelry" maxlength="40" required></div><div class="form-field"><label class="form-label" for="categoryDescriptionInput">Description <span class="opt">(optional)</span></label><textarea class="form-textarea" id="categoryDescriptionInput" placeholder="Short collection description"></textarea></div><div class="form-grid modal-form-grid"><div class="form-field"><label class="form-label" for="categoryImageInput">Category image URL <span class="opt">(optional)</span></label><input class="form-input" id="categoryImageInput" type="url" placeholder="https://..."><div class="field-help">Use an approved image URL; no image is invented.</div></div><div class="form-field"><label class="form-label" for="categoryOrderInput">Display order</label><input class="form-input" id="categoryOrderInput" type="number" min="0" value="0"></div></div><div class="category-image-preview" id="categoryImagePreview"><span>Category image preview</span></div><div class="form-grid modal-form-grid"><label class="check-card"><input type="checkbox" id="categoryActiveInput" checked><span><strong>Active</strong><small>Visible to customers.</small></span></label><label class="check-card"><input type="checkbox" id="categoryFeaturedInput"><span><strong>Featured</strong><small>Prioritize in category displays.</small></span></label></div><div class="form-field"><label class="form-label" for="categoryIconInput">Icon name <span class="opt">(optional)</span></label><input class="form-input" id="categoryIconInput" type="text" placeholder="sparkles" maxlength="30" value="sparkles"></div><div class="modal-actions" style="margin-top:22px"><button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button><button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save Category</button></div></form></div></div>
 
 <!-- Delete Modal -->
 <div class="modal" id="deleteModal">
