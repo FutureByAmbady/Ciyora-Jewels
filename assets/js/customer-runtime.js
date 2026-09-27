@@ -13,9 +13,22 @@
     return body;
   }
   const emptyCatalog = () => ({products:[],categories:[],settings:{businessName:'Ciyora Jewels',email:'',instagram:'',whatsapp:''}});
+  const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
   async function getPublicCatalog(){
-    try { return normalizeCatalog(await request('/catalog')); }
-    catch(error){ const localStaticPreview=error.status===404&&['localhost','127.0.0.1'].includes(window.location.hostname); if(!error.status||localStaticPreview){console.warn('Ciyora API unavailable; showing an empty catalogue.',error);return normalizeCatalog(emptyCatalog());} throw error; }
+    let lastError;
+    for(let attempt=0; attempt<4; attempt += 1){
+      try { return normalizeCatalog(await request('/catalog')); }
+      catch(error){
+        lastError = error;
+        const transient = [502,503,504].includes(Number(error?.status));
+        if(!transient || attempt===3) break;
+        await sleep(250 * (2 ** attempt));
+      }
+    }
+    const error = lastError || new Error('Catalogue request failed');
+    const localStaticPreview=error.status===404&&['localhost','127.0.0.1'].includes(window.location.hostname);
+    if(!error.status||localStaticPreview){console.warn('Ciyora API unavailable; showing an empty catalogue.',error);return normalizeCatalog(emptyCatalog());}
+    throw error;
   }
   async function getAdminCatalog(){ return normalizeCatalog(await request('/admin/catalog')); }
   const createProduct = product => request('/admin/products',{method:'POST',body:JSON.stringify(product)});
