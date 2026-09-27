@@ -132,7 +132,7 @@
               <div class="stat-icon"><i data-lucide="gem"></i></div>
             </div>
             <div class="stat-value" id="stat-total">8</div>
-            <div class="stat-change"><i data-lucide="trending-up" style="width:12px;height:12px"></i> +2 this week</div>
+            <div class="stat-change" style="color:var(--muted)">Live D1 catalogue</div>
           </div>
           <div class="stat-card">
             <div class="stat-head">
@@ -617,24 +617,6 @@
           </div>
         </form>
 
-        <div class="card data-tools-card">
-          <div class="card-head">
-            <div>
-              <div class="card-title">Catalog Data</div>
-              <div class="card-sub">Back up or restore this browser-local prototype</div>
-            </div>
-            <i data-lucide="database" class="data-tools-icon"></i>
-          </div>
-          <div class="card-body">
-            <p class="data-tools-note">Export a JSON backup before moving browsers or making a large catalog change. Importing replaces the current local catalog on this browser only.</p>
-            <div class="data-tools-actions">
-              <button type="button" class="btn btn-secondary" onclick="exportCatalog()"><i data-lucide="download"></i> Export Catalog</button>
-              <button type="button" class="btn btn-secondary" onclick="document.getElementById('catalogImportInput').click()"><i data-lucide="upload"></i> Import Catalog</button>
-              <button type="button" class="btn btn-danger" onclick="resetCatalog()"><i data-lucide="rotate-ccw"></i> Reset Demo Data</button>
-            </div>
-            <input type="file" id="catalogImportInput" accept="application/json,.json" style="display:none" onchange="importCatalog(this.files[0])">
-          </div>
-        </div>
       </section>
 
     </main>
