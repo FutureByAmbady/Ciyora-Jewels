@@ -1,0 +1,5 @@
+PRAGMA foreign_keys = ON;
+
+ALTER TABLE products ADD COLUMN stone TEXT NOT NULL DEFAULT '';
+ALTER TABLE products ADD COLUMN dimensions TEXT NOT NULL DEFAULT '';
+
