@@ -56,7 +56,7 @@ export function normalizeWhatsapp(value) {
 }
 
 export function recordActivity(db, { eventType, message, productId = null, categoryId = null }) {
-  return db.prepare('INSERT INTO activity_events (event_type, message, product_id, category_id) VALUES (?, ?, ?, ?)').bind(String(eventType).slice(0, 80), String(message).slice(0, 500), productId, categoryId).run();
+  return db.prepare('INSERT INTO activity_events (event_type, message, product_id, category_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').bind(String(eventType).slice(0, 80), String(message).slice(0, 500), productId, categoryId).run();
 }
 
 export function recordAnalytics(db, { eventType, productId = null, category = '', searchTerm = '' }) {
