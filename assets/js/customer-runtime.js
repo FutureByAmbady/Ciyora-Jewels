@@ -57,7 +57,7 @@
   const instagramHref = () => instagramUrl() || '#';
   const categoryProducts = category => products.filter(p => p.cat === category.name || slugify(p.cat) === category.slug);
   const pieceLabel = count => `${count} piece${count === 1 ? '' : 's'}`;
-  function renderHero(){ const hero=document.getElementById('heroImage'); const lead=products.find(p=>p.featured&&image(p))||products.find(p=>image(p)); if(hero&&lead) hero.src=image(lead); }
+  function renderHero(){ const hero=document.getElementById('heroImage'); if(hero) hero.src='/assets/images/hero/ciyora-hero-wide.jpg'; const source=document.querySelector('#heroPicture source'); if(source) source.srcset='/assets/images/hero/ciyora-hero-mobile.jpg'; }
   function renderDrawerCollections(){ const box=document.getElementById('drawerCollections'); if(!box) return; box.innerHTML=categories.filter(c=>c.active!==false).map(c=>
     `<a href="/category/${encodeURIComponent(c.slug)}" onclick="toggleMenu(false)">${escapeHtml(c.name)}<span>${Number(c.count||categoryProducts(c).length)}</span></a>`).join(''); }
 
