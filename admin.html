@@ -385,7 +385,7 @@
                   <h4>Ciyora Jewels Logo</h4>
                   <p>PNG, JPG up to 2MB · Recommended 512×512</p>
                   <div class="logo-btns">
-                    <button type="button" class="btn btn-secondary btn-sm">Upload new</button>
+                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('brandLogoFile').click()">Upload new</button><input id="brandLogoFile" type="file" accept="image/*" hidden onchange="handleBrandFile(this,'settings-logo')"><button type="button" class="btn btn-ghost btn-sm" onclick="document.getElementById('brandFaviconFile').click()">Upload favicon</button><input id="brandFaviconFile" type="file" accept="image/*" hidden onchange="handleBrandFile(this,'settings-favicon')">
                     <button type="button" class="btn btn-ghost btn-sm">Remove</button>
                   </div>
                 </div>
