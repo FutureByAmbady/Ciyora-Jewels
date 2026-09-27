@@ -46,7 +46,7 @@ export async function onRequestDelete({ request, env }) {
     const existing = await env.DB.prepare('SELECT name FROM products WHERE id = ?').bind(id).first();
     const result = await env.DB.prepare('DELETE FROM products WHERE id = ?').bind(id).run();
     if (!result.meta.changes) return error('Product was not found.', 404, 'not_found');
-    await recordActivity(env.DB, { eventType: 'product_deleted', message: `Product deleted: ${existing?.name || id}`, productId: id });
+    await recordActivity(env.DB, { eventType: 'product_deleted', message: `Product deleted: ${existing?.name || id}` });
     return json({ ok: true });
   } catch (err) {
     return handleError(err);
