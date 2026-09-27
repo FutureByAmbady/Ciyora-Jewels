@@ -9,8 +9,8 @@ const flag = name => args[args.indexOf(name) + 1];
 const email = String(flag('--email') || '').trim().toLowerCase();
 const displayName = String(flag('--name') || 'Ciyora Admin').trim();
 if (!email || !email.includes('@')) {
-    console.error('Usage: node scripts/create-admin.mjs --email admin@example.com --name "Ciyora Admin"');
-    process.exit(1);
+  console.error('Usage: node scripts/create-admin.mjs --email admin@example.com --name "Ciyora Admin"');
+  process.exit(1);
 }
 
 const rl = createInterface({ input, output });
@@ -18,8 +18,8 @@ const password = await rl.question('Choose an admin password (12+ characters; in
 const confirmation = await rl.question('Confirm password: ');
 rl.close();
 if (password.length < 12 || password !== confirmation) {
-    console.error('Passwords must match and be at least 12 characters.');
-    process.exit(1);
+  console.error('Passwords must match and be at least 12 characters.');
+  process.exit(1);
 }
 
 const salt = cryptoApi.getRandomValues(new Uint8Array(16));
