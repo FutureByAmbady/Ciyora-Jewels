@@ -7,7 +7,7 @@ Professional static storefront and admin dashboard for Ciyora Jewels.
 - Static storefront: `index.html` plus `assets/`
 - Admin dashboard: `admin.html` plus `assets/`
 - Cloudflare Pages Functions: `functions/api/`
-- Cloudflare D1 schema and demo catalog: `migrations/0001_initial.sql`
+- Cloudflare D1 schema and catalogue migrations: `migrations/0001_initial.sql` through `migrations/0003_owner_catalog_fields.sql`
 - Secure admin users and sessions: D1 `admin_users` and `sessions` tables
 - Catalog reads and writes: JSON API under `/api`
 
@@ -64,7 +64,7 @@ Cloudflare Pages detects the `functions/` directory and uses the D1 binding name
 - Sessions are random, database-backed, expire after seven days, and use HttpOnly/SameSite cookies.
 - Admin mutations require a valid session and same-origin request.
 - Delete `admin-user.sql` immediately after applying it.
-- The current image picker stores image URLs/data URLs in the catalog. For a larger production catalog, move original image files to Cloudflare R2 or an image CDN and store only their URLs in D1.
+- The current image picker stores image URLs/data URLs in the catalog. For a larger production catalog, move original image files to Cloudflare R2 or an image CDN and store only their URLs in D1. Stone and Dimensions are optional D1 fields added by migration 0003.
 
 ## API routes
 
