@@ -1,4 +1,3 @@
-/admin /admin.html 200
 /category/* /index.html 200
 /product/* /index.html 200
 /search* /index.html 200
