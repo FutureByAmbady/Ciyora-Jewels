@@ -28,7 +28,8 @@ export function productFromRow(row) {
     sizes, badge: row.badge || '', status: row.status === 'hidden' ? 'hidden' : 'published', active: Number(row.is_active ?? 1) === 1,
     stockQuantity: Number(row.stock_quantity || 0), stockStatus: row.stock_status || (Number(row.stock_quantity || 0) > 0 ? 'in_stock' : 'out_of_stock'),
     featured: Number(row.is_featured || 0) === 1, newArrival: Number(row.is_new_arrival || 0) === 1,
-    img: row.image || imgs[0] || '', imgs, whatsapp: row.whatsapp || '', instagram: row.instagram || '',
+    // Keep one copy of the primary image when the gallery already contains it.
+    img: (imgs.length && row.image && imgs[0] === row.image) ? '' : (row.image || imgs[0] || ''), imgs, whatsapp: row.whatsapp || '', instagram: row.instagram || '',
     careInstructions: row.care_instructions || '', shippingInformation: row.shipping_information || '', returnInformation: row.return_information || '',
     createdAt: row.created_at, updatedAt: row.updated_at,
   };
