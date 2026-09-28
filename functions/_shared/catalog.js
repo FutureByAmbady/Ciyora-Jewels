@@ -128,11 +128,11 @@ export async function readCatalog(db, { includeHidden = false, query = {} } = {}
   const order = sortMap[text(query.sort)] || 'p.created_at DESC, p.id DESC';
   const productSql = `SELECT p.* FROM products p LEFT JOIN categories c ON c.name = p.category WHERE ${where.join(' AND ')} ORDER BY ${order} LIMIT 100`;
   const categoryWhere = includeHidden ? '1=1' : 'c.is_active = 1';
-  const [productResult, categoryResult, settingsResult] = await Promise.all([
-    db.prepare(productSql).bind(...args).all(),
-    db.prepare(`SELECT c.*, COUNT(CASE WHEN p.status = 'published' AND p.is_active = 1 THEN p.id END) AS product_count FROM categories c LEFT JOIN products p ON p.category = c.name WHERE ${categoryWhere} GROUP BY c.id ORDER BY c.display_order ASC, c.id ASC`).all(),
-    db.prepare('SELECT * FROM settings WHERE id = 1').first(),
-  ]);
+  // Keep D1 reads sequential in the Pages Worker. This preserves the response shape while avoiding
+  // concurrent statement pressure that can trip the Worker resource limit under public traffic.
+  const productResult = await db.prepare(productSql).bind(...args).all();
+  const categoryResult = await db.prepare(`SELECT c.*, COUNT(CASE WHEN p.status = 'published' AND p.is_active = 1 THEN p.id END) AS product_count FROM categories c LEFT JOIN products p ON p.category = c.name WHERE ${categoryWhere} GROUP BY c.id ORDER BY c.display_order ASC, c.id ASC`).all();
+  const settingsResult = await db.prepare('SELECT * FROM settings WHERE id = 1').first();
   return { products: (productResult.results || []).map(productFromRow), categories: (categoryResult.results || []).map(categoryFromRow), settings: settingsFromRow(settingsResult) };
 }
 
